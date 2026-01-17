@@ -177,16 +177,16 @@ class Coil:
         Br = self._Br(r, ksi_low, ksi_high)
         Bz = self._Bz(r, ksi_low, ksi_high)
 
-        return Br, Bz
+        # Convert to Cartesian: Br points radially outward
+        # For x > coil.x: radial is +x direction
+        # For x < coil.x: radial is -x direction
+        sign_x = np.sign(x - self.x)
+        sign_x = np.where(sign_x == 0, 1, sign_x)  # On axis, default to positive
         
-        # # Convert to Cartesian: Br points radially outward
-        # sign_x = np.sign(x - self.x)
-        # sign_x = np.where(sign_x == 0, 0, sign_x)
+        Bx = Br * sign_x
+        By = Bz
         
-        # Bx = Br #* sign_x
-        # By = Bz
-        
-        # return Bx, By
+        return -Bx, By
 
 
 class MagneticFieldSimulation:
@@ -316,16 +316,16 @@ if __name__ == "__main__":
         current=1.0
     )
     
-    # coil2 = Coil(
-    #     x=0.0, y=0.20,
-    #     radius=0.05,
-    #     length=0.10,
-    #     n_turns=100,
-    #     current=1.0
-    # )
+    coil2 = Coil(
+        x=0.1, y=0.20,
+        radius=0.05,
+        length=0.10,
+        n_turns=100,
+        current=1.0
+    )
     
     sim.add_coil(coil1)
-    # sim.add_coil(coil2)
+    sim.add_coil(coil2)
     
     # Plot the field
     fig, ax = sim.plot(
