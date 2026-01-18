@@ -54,8 +54,6 @@ def get_k(a, r, ksi):
 
 def get_Br(a, mu, n, i, r, ksi_low, ksi_high):
     """Compute radial magnetic field component."""
-    # a = self.radius
-    # mu, n, i = self.mu, self.n, self.current
     
     # Handle r=0 (on axis) - Br is zero by symmetry
     r = np.asarray(r, dtype=float)
@@ -90,10 +88,10 @@ def get_Br(a, mu, n, i, r, ksi_low, ksi_high):
     result[mask] = Br_high - Br_low
     return result[0] if scalar_input else result
 
+
+
 def get_Bz(a, mu, n, i, r, ksi_low, ksi_high):
     """Compute axial magnetic field component."""
-    # a = self.radius
-    # mu, n, i = self.mu, self.n, self.current
     
     r = np.asarray(r, dtype=float)
     scalar_input = r.ndim == 0

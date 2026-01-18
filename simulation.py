@@ -66,7 +66,7 @@ class Magnet:
     Dipole approximation, correct far from the magnet.
     Position (x, y) represents the center of the magnet.
 
-    Le moment magnétique d’un aimant permanent vaut approximativement : m = MV
+    Le moment magnétique d’un aimant permanent vaut : m = MV
     avec :
         M la magnétisation du materiau (A/m),
         V le volume de l’aimant (m³).
@@ -107,8 +107,8 @@ class Magnet:
         r = np.maximum(np.sqrt(r_sq), 1e-10)  # Avoid division by zero
         
         # Dipole field components (for dipole along y-axis)
-        # Bx = (μ₀ * m / 4π) * (3 * x * y) / r^5  
-        # By = (μ₀ * m / 4π) * (2y² - x²)) / r^5
+        # Bx = (μ * m / 4π) * (3 * x * y) / r^5  
+        # By = (μ * m / 4π) * (2y² - x²)) / r^5
         Bx = self.mu * self.moment / (4*np.pi) * (3 * dx * dy) / r**5
         By = self.mu * self.moment / (4*np.pi) * (2 * dy**2 - dx**2) / r**5
         

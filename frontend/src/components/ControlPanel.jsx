@@ -1,0 +1,348 @@
+import React, { useState } from 'react';
+import { Coil, Magnet } from '../physics/objects';
+
+const ControlPanel = ({ simulation, onUpdate, viewMode, onViewModeChange }) => {
+  const [selectedObject, setSelectedObject] = useState(null);
+  const [showAddMenu, setShowAddMenu] = useState(false);
+
+  const handleAddCoil = () => {
+    const newCoil = new Coil(0, 0, 0.05, 0.2, 100, 2.0);
+    simulation.addObject(newCoil);
+    onUpdate();
+    setShowAddMenu(false);
+  };
+
+  const handleAddMagnet = () => {
+    const newMagnet = new Magnet(0, 0, 0.1);
+    simulation.addObject(newMagnet);
+    onUpdate();
+    setShowAddMenu(false);
+  };
+
+  const handleRemoveObject = (id) => {
+    simulation.removeObject(id);
+    if (selectedObject?.id === id) {
+      setSelectedObject(null);
+    }
+    onUpdate();
+  };
+
+  const handleObjectSelect = (obj) => {
+    setSelectedObject(obj);
+  };
+
+  const handlePropertyChange = (property, value) => {
+    if (!selectedObject) return;
+    
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return;
+
+    simulation.updateObject(selectedObject.id, { [property]: numValue });
+    setSelectedObject({ ...selectedObject, [property]: numValue });
+    onUpdate();
+  };
+
+  return (
+    <div style={styles.container}>
+      <div style={styles.section}>
+        <h3 style={styles.heading}>Visualization Mode</h3>
+        <div style={styles.buttonGroup}>
+          <button
+            style={{
+              ...styles.button,
+              ...(viewMode === 'arrows' ? styles.buttonActive : {})
+            }}
+            onClick={() => onViewModeChange('arrows')}
+          >
+            Arrows
+          </button>
+          <button
+            style={{
+              ...styles.button,
+              ...(viewMode === 'lines' ? styles.buttonActive : {})
+            }}
+            onClick={() => onViewModeChange('lines')}
+          >
+            Lines
+          </button>
+        </div>
+      </div>
+
+      <div style={styles.section}>
+        <h3 style={styles.heading}>Objects</h3>
+        <button
+          style={styles.addButton}
+          onClick={() => setShowAddMenu(!showAddMenu)}
+        >
+          + Add Object
+        </button>
+
+        {showAddMenu && (
+          <div style={styles.addMenu}>
+            <button style={styles.menuButton} onClick={handleAddCoil}>
+              Add Coil
+            </button>
+            <button style={styles.menuButton} onClick={handleAddMagnet}>
+              Add Magnet
+            </button>
+          </div>
+        )}
+
+        <div style={styles.objectList}>
+          {simulation.objects.map((obj) => (
+            <div
+              key={obj.id}
+              style={{
+                ...styles.objectItem,
+                ...(selectedObject?.id === obj.id ? styles.objectItemSelected : {})
+              }}
+              onClick={() => handleObjectSelect(obj)}
+            >
+              <div style={styles.objectInfo}>
+                <strong>{obj.type === 'coil' ? '🔌 Coil' : '🧲 Magnet'}</strong>
+                <div style={styles.objectCoords}>
+                  ({obj.x.toFixed(3)}, {obj.y.toFixed(3)})
+                </div>
+              </div>
+              <button
+                style={styles.deleteButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemoveObject(obj.id);
+                }}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {selectedObject && (
+        <div style={styles.section}>
+          <h3 style={styles.heading}>Properties</h3>
+          <div style={styles.properties}>
+            <div style={styles.property}>
+              <label style={styles.label}>X Position (m)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={selectedObject.x}
+                onChange={(e) => handlePropertyChange('x', e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.property}>
+              <label style={styles.label}>Y Position (m)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={selectedObject.y}
+                onChange={(e) => handlePropertyChange('y', e.target.value)}
+                style={styles.input}
+              />
+            </div>
+
+            {selectedObject.type === 'coil' && (
+              <>
+                <div style={styles.property}>
+                  <label style={styles.label}>Radius (m)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={selectedObject.radius}
+                    onChange={(e) => handlePropertyChange('radius', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Length (m)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={selectedObject.length}
+                    onChange={(e) => handlePropertyChange('length', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Number of Turns</label>
+                  <input
+                    type="number"
+                    step="10"
+                    value={selectedObject.nTurns}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      if (!isNaN(val)) {
+                        simulation.updateObject(selectedObject.id, { 
+                          nTurns: val,
+                          n: val / selectedObject.length 
+                        });
+                        setSelectedObject({ ...selectedObject, nTurns: val });
+                        onUpdate();
+                      }
+                    }}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Current (A)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={selectedObject.current}
+                    onChange={(e) => handlePropertyChange('current', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+              </>
+            )}
+
+            {selectedObject.type === 'magnet' && (
+              <div style={styles.property}>
+                <label style={styles.label}>Magnetic Moment (A·m²)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={selectedObject.moment}
+                  onChange={(e) => handlePropertyChange('moment', e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const styles = {
+  container: {
+    width: '300px',
+    padding: '20px',
+    backgroundColor: '#f5f5f5',
+    borderLeft: '1px solid #ccc',
+    overflowY: 'auto',
+    fontFamily: 'Arial, sans-serif'
+  },
+  section: {
+    marginBottom: '30px'
+  },
+  heading: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+    marginBottom: '10px',
+    color: '#333'
+  },
+  buttonGroup: {
+    display: 'flex',
+    gap: '10px'
+  },
+  button: {
+    flex: 1,
+    padding: '10px',
+    backgroundColor: 'white',
+    border: '2px solid #ddd',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    transition: 'all 0.2s'
+  },
+  buttonActive: {
+    backgroundColor: '#007bff',
+    color: 'white',
+    borderColor: '#007bff'
+  },
+  addButton: {
+    width: '100%',
+    padding: '10px',
+    backgroundColor: '#28a745',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    fontSize: '14px'
+  },
+  addMenu: {
+    marginTop: '10px',
+    backgroundColor: 'white',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    overflow: 'hidden'
+  },
+  menuButton: {
+    width: '100%',
+    padding: '10px',
+    backgroundColor: 'white',
+    border: 'none',
+    borderBottom: '1px solid #ddd',
+    cursor: 'pointer',
+    textAlign: 'left',
+    fontSize: '14px'
+  },
+  objectList: {
+    marginTop: '15px'
+  },
+  objectItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '10px',
+    marginBottom: '5px',
+    backgroundColor: 'white',
+    border: '2px solid #ddd',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    transition: 'all 0.2s'
+  },
+  objectItemSelected: {
+    borderColor: '#007bff',
+    backgroundColor: '#e7f3ff'
+  },
+  objectInfo: {
+    flex: 1
+  },
+  objectCoords: {
+    fontSize: '12px',
+    color: '#666',
+    marginTop: '5px'
+  },
+  deleteButton: {
+    width: '30px',
+    height: '30px',
+    backgroundColor: '#dc3545',
+    color: 'white',
+    border: 'none',
+    borderRadius: '50%',
+    cursor: 'pointer',
+    fontSize: '20px',
+    lineHeight: '1',
+    fontWeight: 'bold'
+  },
+  properties: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px'
+  },
+  property: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  label: {
+    fontSize: '12px',
+    fontWeight: 'bold',
+    marginBottom: '5px',
+    color: '#555'
+  },
+  input: {
+    padding: '8px',
+    border: '1px solid #ddd',
+    borderRadius: '3px',
+    fontSize: '14px'
+  }
+};
+
+export default ControlPanel;
+
