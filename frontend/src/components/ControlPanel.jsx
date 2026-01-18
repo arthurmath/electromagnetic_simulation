@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { Coil, Magnet } from '../physics/objects';
 
-const ControlPanel = ({ simulation, onUpdate, viewMode, onViewModeChange }) => {
+const ControlPanel = ({ 
+  simulation, 
+  onUpdate, 
+  viewMode, 
+  onViewModeChange,
+  resolution,
+  setResolution,
+  lineDensity,
+  setLineDensity
+}) => {
   const [selectedObject, setSelectedObject] = useState(null);
   const [showAddMenu, setShowAddMenu] = useState(false);
 
@@ -65,6 +74,44 @@ const ControlPanel = ({ simulation, onUpdate, viewMode, onViewModeChange }) => {
           >
             Lines
           </button>
+        </div>
+      </div>
+
+      <div style={styles.section}>
+        <h3 style={styles.heading}>Visualization Settings</h3>
+        <div style={styles.properties}>
+          <div style={styles.property}>
+            <div style={styles.sliderHeader}>
+              <label style={styles.label}>Resolution</label>
+              <span style={styles.value}>{resolution}</span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="50"
+              value={resolution}
+              onChange={(e) => setResolution(parseInt(e.target.value))}
+              style={styles.slider}
+            />
+          </div>
+          
+          {viewMode === 'lines' && (
+            <div style={styles.property}>
+              <div style={styles.sliderHeader}>
+                <label style={styles.label}>Line Density</label>
+                <span style={styles.value}>{lineDensity.toFixed(1)}</span>
+              </div>
+              <input
+                type="range"
+                min="0.5"
+                max="3"
+                step="0.1"
+                value={lineDensity}
+                onChange={(e) => setLineDensity(parseFloat(e.target.value))}
+                style={styles.slider}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -341,6 +388,21 @@ const styles = {
     border: '1px solid #ddd',
     borderRadius: '3px',
     fontSize: '14px'
+  },
+  sliderHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '5px'
+  },
+  value: {
+    fontSize: '12px',
+    color: '#666',
+    fontWeight: 'bold'
+  },
+  slider: {
+    width: '100%',
+    cursor: 'pointer'
   }
 };
 

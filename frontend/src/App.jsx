@@ -4,6 +4,7 @@ import { Coil, Magnet } from './physics/objects';
 import ArrowVisualization from './components/ArrowVisualization';
 import LineVisualization from './components/LineVisualization';
 import ControlPanel from './components/ControlPanel';
+import ColorLegend from './components/ColorLegend';
 
 function App() {
   const [simulation] = useState(() => {
@@ -36,49 +37,23 @@ function App() {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <h1 style={styles.title}>Electromagnetic Field Visualizer</h1>
-        <div style={styles.controls}>
-          <div style={styles.controlGroup}>
-            <label style={styles.controlLabel}>Resolution:</label>
-            <input
-              type="range"
-              min="10"
-              max="50"
-              value={resolution}
-              onChange={(e) => setResolution(parseInt(e.target.value))}
-              style={styles.slider}
-            />
-            <span style={styles.controlValue}>{resolution}</span>
-          </div>
-          {viewMode === 'lines' && (
-            <div style={styles.controlGroup}>
-              <label style={styles.controlLabel}>Line Density:</label>
-              <input
-                type="range"
-                min="0.5"
-                max="3"
-                step="0.1"
-                value={lineDensity}
-                onChange={(e) => setLineDensity(parseFloat(e.target.value))}
-                style={styles.slider}
-              />
-              <span style={styles.controlValue}>{lineDensity.toFixed(1)}</span>
-            </div>
-          )}
-        </div>
+        <h1 style={styles.title}>⚡️ Electromagnetic Field Visualizer</h1>
       </header>
 
       <div style={styles.main}>
         <div style={styles.canvas}>
           {viewMode === 'arrows' ? (
-            <ArrowVisualization
-              simulation={simulation}
-              version={updateCounter}
-              xRange={xRange}
-              yRange={yRange}
-              resolution={resolution}
-              onObjectDrag={handleObjectDrag}
-            />
+            <>
+              <ArrowVisualization
+                simulation={simulation}
+                version={updateCounter}
+                xRange={xRange}
+                yRange={yRange}
+                resolution={resolution}
+                onObjectDrag={handleObjectDrag}
+              />
+              <ColorLegend />
+            </>
           ) : (
             <LineVisualization
               simulation={simulation}
@@ -97,6 +72,10 @@ function App() {
           onUpdate={handleUpdate}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
+          resolution={resolution}
+          setResolution={setResolution}
+          lineDensity={lineDensity}
+          setLineDensity={setLineDensity}
         />
       </div>
     </div>
@@ -122,27 +101,6 @@ const styles = {
     fontSize: '24px',
     fontWeight: 'bold'
   },
-  controls: {
-    display: 'flex',
-    gap: '30px',
-    alignItems: 'center'
-  },
-  controlGroup: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  },
-  controlLabel: {
-    fontSize: '14px',
-    fontWeight: 'bold'
-  },
-  slider: {
-    width: '150px'
-  },
-  controlValue: {
-    fontSize: '14px',
-    minWidth: '30px'
-  },
   main: {
     display: 'flex',
     flex: 1,
@@ -154,7 +112,8 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     padding: '20px',
-    backgroundColor: '#f9f9f9'
+    backgroundColor: '#f9f9f9',
+    position: 'relative'
   }
 };
 
