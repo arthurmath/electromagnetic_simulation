@@ -31,7 +31,7 @@ export function ellipe(m) {
   let a = 1;
   let g = Math.sqrt(1 - m);
   let sum = 0;
-  let pow = 0.5;
+  let pow = 1;
   
   while (Math.abs(a - g) > EPSILON) {
     const temp = (a + g) / 2;
@@ -42,7 +42,7 @@ export function ellipe(m) {
     pow *= 2;
   }
   
-  return Math.PI / (2 * a) * (1 - sum);
+  return Math.PI / (2 * a) * (1 - 0.5 * m - sum);
 }
 
 // Incomplete elliptic integral of the first kind F(phi, m)

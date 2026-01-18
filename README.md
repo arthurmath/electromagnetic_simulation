@@ -1,6 +1,13 @@
-# ELECTROMAGNETIC FIELD VISUALIZER 
+# Magnetic Field Visualisation App
+
+App simulating the magnetic field of coils and magnets. Python codes generates images, React frontend contains an interactive visualization.
+
 
 ## Python : 
+
+Required: Python 3.10+
+
+Setup:
 
 python3 -m venv .venv
 source .venv/bin/activate
@@ -14,7 +21,7 @@ python3 simulation.py
 
 Required: NodeJS (mac: "brew install node")
 
-SETUP:
+Setup:
 
 1. Navigate to the frontend directory:
    cd frontend
@@ -32,7 +39,7 @@ SETUP:
    Press q + enter
 
 
-FEATURES:
+### Features:
 
 ✓ Two Visualization Modes:
   - Arrows: Shows vector field with arrows colored by magnitude
@@ -61,7 +68,7 @@ FEATURES:
   - Line Density: (Lines mode only) Controls how many field lines are drawn
 
 
-CONTROLS:
+### Controls:
 
 - Mouse drag on canvas: Move objects
 - Click object in list: Select for editing
@@ -70,12 +77,4 @@ CONTROLS:
 - Add Object button: Create new coils or magnets
 - × button: Delete an object
 - Arrows/Lines buttons: Switch visualization mode
-
-
-NOTES:
-
-- The simulation uses the same physics calculations as the Python version
-- Field lines in "Lines" mode will attempt to form closed loops where possible
-- White background is used for both visualization modes
-- Objects are color-coded: Red for coils, Blue for magnets
 

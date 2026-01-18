@@ -3,21 +3,18 @@ from scipy import special
 
 
 
+def get_phi(r, a, ksi):
+    return np.arctan(np.abs(ksi / (a - r)))
 
-def get_lambda(get_phi, k):
+
+
+def get_lambda(phi, k):
     """
     Calcule la fonction lambda de Heuman Λ(get_phi, k)
 
-    Parameters
-    ----------
-    get_phi : float ou array
-        Angle en radians
-    k : float
-        Module elliptique (0 <= k <= 1)
-
-    Returns
-    -------
-    Lambda(get_phi, k)
+    Parameters:
+    phi (float ou array) : Angle en radians
+    k (float) : Module elliptique (0 <= k <= 1)
     """
     kp = np.sqrt(1 - k**2)  # module complémentaire
 
@@ -25,18 +22,11 @@ def get_lambda(get_phi, k):
     K = special.ellipk(k**2)
     E = special.ellipe(k**2)
 
-    # print("get_phi : ", get_phi)
-    # print("K : ", kp)
-
     # Intégrales incomplètes (avec le module complémentaire)
-    F_get_phi = special.ellipkinc(np.asarray(get_phi), kp**2)
-    E_get_phi = special.ellipeinc(np.asarray(get_phi), kp**2)
+    F_get_phi = special.ellipkinc(np.asarray(phi), kp**2)
+    E_get_phi = special.ellipeinc(np.asarray(phi), kp**2)
 
     return (2 / np.pi) * (E * F_get_phi + K * E_get_phi - K * F_get_phi)
-
-
-def get_phi(r, a, ksi):
-    return np.arctan(np.abs(ksi / (a - r)))
 
 
 
@@ -54,7 +44,7 @@ def get_k(a, r, ksi):
 
 def get_Br(a, mu, n, i, r, ksi_low, ksi_high):
     """Compute radial magnetic field component."""
-    
+
     # Handle r=0 (on axis) - Br is zero by symmetry
     r = np.asarray(r, dtype=float)
     scalar_input = r.ndim == 0

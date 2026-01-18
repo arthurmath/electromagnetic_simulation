@@ -3,7 +3,7 @@
  * Ported from simulation.py
  */
 
-import { getBr, getBz } from './fieldFunctions.js';
+import { getBr, getBz } from './functions.js';
 
 const MU_0 = 4 * Math.PI * 1e-7;
 
@@ -37,7 +37,7 @@ export class Coil {
     // Convert to Cartesian: Br points radially outward
     const sign_x = x - this.x === 0 ? 1 : Math.sign(x - this.x);
 
-    const Bx = Br * sign_x;
+    const Bx = -Br * sign_x;
     const By = Bz;
 
     return { Bx, By };
