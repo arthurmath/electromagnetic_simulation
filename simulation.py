@@ -57,16 +57,77 @@ class Coil:
 
 
 
+class Magnet:
+    """
+    Represents a permanent magnet using the magnetic dipole model:
+    B̂ = (μ0/4π) * [3(^m·r̂)r̂ - ^mr²] / r³
+    
+    The magnet is oriented along the y-direction (dipole moment points in +y or -y).
+    Dipole approximation, correct far from the magnet.
+    Position (x, y) represents the center of the magnet.
+
+    Le moment magnétique d’un aimant permanent vaut approximativement : m = MV
+    avec :
+        M la magnétisation du materiau (A/m),
+        V le volume de l’aimant (m³).
+    """
+    
+    def __init__(self, x, y, moment=0.1, mu=4*np.pi*1e-7):
+        """
+        Initialize a magnetic dipole.
+        
+        Parameters:
+            x, y: position of the magnet center
+            moment: magnetic dipole moment (A·m²), positive = +y direction
+            mu: permeability (default: vacuum permeability)
+        """
+        self.x = x
+        self.y = y
+        self.radius = 0.01
+        self.length = 0.03
+        self.moment = moment
+        self.mu = mu
+    
+    def field(self, x, y):
+        """
+        Calculate magnetic field (Bx, By) at given points.
+        
+        Uses the magnetic dipole field equations.
+        Returns Bx (radial) and By (axial) components.
+        """
+        x = np.asarray(x, dtype=float)
+        y = np.asarray(y, dtype=float)
+        
+        # Position relative to dipole center
+        dx = x - self.x
+        dy = y - self.y
+        
+        # Distance from dipole
+        r_sq = dx**2 + dy**2
+        r = np.maximum(np.sqrt(r_sq), 1e-10)  # Avoid division by zero
+        
+        # Dipole field components (for dipole along y-axis)
+        # Bx = (μ₀ * m / 4π) * (3 * x * y) / r^5  
+        # By = (μ₀ * m / 4π) * (2y² - x²)) / r^5
+        Bx = self.mu * self.moment / (4*np.pi) * (3 * dx * dy) / r**5
+        By = self.mu * self.moment / (4*np.pi) * (2 * dy**2 - dx**2) / r**5
+        
+        # Set field to zero at dipole location (avoid singularity artifacts)
+        at_center = r < 1e-10
+        Bx = np.where(at_center, 0.0, Bx)
+        By = np.where(at_center, 0.0, By)
+        
+        return Bx, By
+
+
+
+
 class MagneticFieldSimulation:
-    """Simulates the combined magnetic field from multiple coils."""
+    """Simulates the combined magnetic field from multiple objects."""
     
-    def __init__(self, coils: List[Coil]):
-        self.coils = coils
+    def __init__(self, objects: List[Coil|Magnet]):
+        self.objects = objects
     
-    def add_coil(self, coil):
-        """Add a coil to the simulation."""
-        self.coils.append(coil)
-        return self
     
     def compute_field(self, x_range, y_range, resolution=30):
         """
@@ -86,8 +147,8 @@ class MagneticFieldSimulation:
         X_flat = self.X.flatten()
         Y_flat = self.Y.flatten()
         
-        for coil in self.coils:
-            bx, by = coil.field(X_flat, Y_flat)
+        for obj in self.objects:
+            bx, by = obj.field(X_flat, Y_flat)
             self.Bx += bx.reshape(self.X.shape)
             self.By += by.reshape(self.Y.shape)
     
@@ -134,22 +195,22 @@ class MagneticFieldSimulation:
         plt.setp(plt.getp(cbar.ax.axes, 'yticklabels'), color='white')
         
         # Draw coil representations
-        for coil in self.coils:
+        for objet in self.objects:
             # Draw coil as a rectangle
             rect = plt.Rectangle(
-                (coil.x - coil.radius, coil.y - coil.length/2),
-                2 * coil.radius,
-                coil.length,
+                (objet.x - objet.radius, objet.y - objet.length/2),
+                2 * objet.radius,
+                objet.length,
                 fill=False,
                 edgecolor='#58a6ff',
                 linewidth=2,
                 linestyle='--',
-                label=f'Coil (r={coil.radius}, L={coil.length})'
+                label=f'Coil (r={objet.radius}, L={objet.length})'
             )
             ax.add_patch(rect)
             
             # Mark coil center
-            ax.plot(coil.x, coil.y, 'o', color='#f78166', markersize=8)
+            ax.plot(objet.x, objet.y, 'o', color='#f78166', markersize=8)
         
         # Styling
         ax.set_xlabel('x [m]', color='white', fontsize=12)
@@ -203,22 +264,22 @@ class MagneticFieldSimulation:
         plt.setp(plt.getp(cbar.ax.axes, 'yticklabels'), color='black')
         
         # Draw coil representations
-        for coil in self.coils:
+        for objet in self.objects:
             # Draw coil as a rectangle
             rect = plt.Rectangle(
-                (coil.x - coil.radius, coil.y - coil.length/2),
-                2 * coil.radius,
-                coil.length,
+                (objet.x - objet.radius, objet.y - objet.length/2),
+                2 * objet.radius,
+                objet.length,
                 fill=False,
                 edgecolor='red',
                 linewidth=2,
                 linestyle='--',
-                label=f'Coil (r={coil.radius}, L={coil.length})'
+                label=f'Coil (r={objet.radius}, L={objet.length})'
             )
             ax.add_patch(rect)
             
             # Mark coil center
-            ax.plot(coil.x, coil.y, 'o', color='red', markersize=8)
+            ax.plot(objet.x, objet.y, 'o', color='red', markersize=8)
         
         # Styling
         ax.set_xlabel('x [m]', color='black', fontsize=12)
@@ -241,7 +302,7 @@ class MagneticFieldSimulation:
 if __name__ == "__main__":
     
     # Add coils at different positions
-    coils = [Coil(
+    objects = [Coil(
         x=-0.05, y=0.0,
         radius=0.05,
         length=0.20,
@@ -249,15 +310,20 @@ if __name__ == "__main__":
         current=2.0
     )]
     
-    coils.append(Coil(
-        x=0.1, y=0.20,
-        radius=0.05,
-        length=0.10,
-        n_turns=100,
-        current=1.0
+    # objects.append(Coil(
+    #     x=0.1, y=0.20,
+    #     radius=0.05,
+    #     length=0.10,
+    #     n_turns=100,
+    #     current=1.0
+    # ))
+
+    objects.append(Magnet(
+        x = 0.1, y = 0.2,
+        moment = 0.1
     ))
     
-    sim = MagneticFieldSimulation(coils)
+    sim = MagneticFieldSimulation(objects)
 
     sim.compute_field(
         x_range=(-0.20, 0.20),
