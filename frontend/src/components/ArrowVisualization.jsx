@@ -82,18 +82,6 @@ const ArrowVisualization = ({ simulation, version, xRange, yRange, resolution, o
       const lengthY = (obj.length / (yRange[1] - yRange[0])) * height;
 
       if (obj.type === 'coil') {
-        ctx.strokeStyle = '#ff0000';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
-        ctx.strokeRect(cx - radiusX, cy - lengthY / 2, radiusX * 2, lengthY);
-        ctx.setLineDash([]);
-
-        // Center mark
-        ctx.fillStyle = '#ff0000';
-        ctx.beginPath();
-        ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
-        ctx.fill();
-      } else if (obj.type === 'magnet') {
         ctx.strokeStyle = '#0000ff';
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 5]);
@@ -105,6 +93,24 @@ const ArrowVisualization = ({ simulation, version, xRange, yRange, resolution, o
         ctx.beginPath();
         ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
         ctx.fill();
+      } else if (obj.type === 'magnet') {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate((90 - (obj.angle ?? 90)) * Math.PI / 180);
+
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeRect(-radiusX, -lengthY / 2, radiusX * 2, lengthY);
+        ctx.setLineDash([]);
+
+        // Center mark
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.arc(0, 0, 4, 0, 2 * Math.PI);
+        ctx.fill();
+
+        ctx.restore();
       }
     });
 

@@ -22,7 +22,7 @@ const ControlPanel = ({
   };
 
   const handleAddMagnet = () => {
-    const newMagnet = new Magnet(0, 0, 0.1);
+    const newMagnet = new Magnet(0, 0, 0.1, 90);
     simulation.addObject(newMagnet);
     onUpdate();
     setShowAddMenu(false);
@@ -146,7 +146,7 @@ const ControlPanel = ({
               onClick={() => handleObjectSelect(obj)}
             >
               <div style={styles.objectInfo}>
-                <strong>{obj.type === 'coil' ? '🔌 Coil' : '🧲 Magnet'}</strong>
+                <strong>{obj.type === 'coil' ? '🔋 Coil' : '🧲 Magnet'}</strong>
                 <div style={styles.objectCoords}>
                   ({obj.x.toFixed(3)}, {obj.y.toFixed(3)})
                 </div>
@@ -246,16 +246,35 @@ const ControlPanel = ({
             )}
 
             {selectedObject.type === 'magnet' && (
-              <div style={styles.property}>
-                <label style={styles.label}>Magnetic Moment (A·m²)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={selectedObject.moment}
-                  onChange={(e) => handlePropertyChange('moment', e.target.value)}
-                  style={styles.input}
-                />
-              </div>
+              <>
+                <div style={styles.property}>
+                  <label style={styles.label}>Magnetic Moment (A·m²)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={selectedObject.moment}
+                    onChange={(e) => handlePropertyChange('moment', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Angle (°)</label>
+                  <input
+                    type="number"
+                    step="1"
+                    min="0"
+                    max="360"
+                    value={((selectedObject.angle ?? 90) - 90 + 360) % 360}
+                    onChange={(e) => {
+                      const userValue = parseFloat(e.target.value);
+                      if (!isNaN(userValue)) {
+                        handlePropertyChange('angle', (userValue + 90) % 360);
+                      }
+                    }}
+                    style={styles.input}
+                  />
+                </div>
+              </>
             )}
           </div>
         </div>

@@ -82,7 +82,5 @@ Setup:
 
 ### TODO
 
-Bug catch coils
-Sens aimants
 Dynamique
 Potentiel vecteur
