@@ -55,29 +55,41 @@ const PotentialVisualization = ({ simulation, version, xRange, yRange, resolutio
         
         const color = getPotentialColor(Az, -9, -4);
         ctx.fillStyle = color;
-        
-        // Calculate canvas position
-        // The grid points are centers or corners?
-        // simulation.computeField uses loops:
-        // x = xMin + j * xStep
-        // y = yMin + i * yStep
-        // We should draw a rect centered at x,y or starting there.
-        // Resolution is points count. So we have (resolution-1) cells?
-        // Or we just draw rects of size cellWidth centered on the point.
-        
-        // Ideally we use putImageData for pixel-perfect rendering, but grid is coarse (30x30).
-        // Rects are fine.
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
         
         const cx = (j / (resolution - 1)) * width;
         const cy = height - (i / (resolution - 1)) * height; // Invert Y
         
-        // Fill rect centered at cx, cy
-        // We need to cover the gap.
-        // distance between points is width/(res-1).
-        const w = width / (resolution - 1);
-        const h = height / (resolution - 1);
+        // Draw standard physics notation for vectors perpendicular to plane
+        // Circle with dot for Out (Positive), Circle with cross for In (Negative)
+        // Size scales with resolution but let's keep it visible
+        const radius = (Math.min(cellWidth, cellHeight) / 2) * 0.8;
         
-        ctx.fillRect(cx - w/2, cy - h/2, w+1, h+1); // +1 to avoid gaps
+        if (radius < 2) {
+            // Fallback to squares if too small
+            ctx.fillRect(cx - cellWidth/2, cy - cellHeight/2, cellWidth, cellHeight);
+        } else {
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            if (Az > 0) {
+                // Dot (Out)
+                ctx.beginPath();
+                ctx.arc(cx, cy, 1, 0, 2 * Math.PI); // Small dot
+                ctx.fill();
+            } else {
+                // Cross (In)
+                const rInner = radius * 0.6;
+                ctx.beginPath();
+                ctx.moveTo(cx - rInner, cy - rInner);
+                ctx.lineTo(cx + rInner, cy + rInner);
+                ctx.moveTo(cx + rInner, cy - rInner);
+                ctx.lineTo(cx - rInner, cy + rInner);
+                ctx.stroke();
+            }
+        }
       }
     }
 

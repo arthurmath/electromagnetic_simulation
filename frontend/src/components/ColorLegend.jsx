@@ -46,6 +46,24 @@ const ColorLegend = ({ min = -8, max = -2, width = 20, height = 200, mode = 'mag
         const color = getPotentialColor(val, min, max);
         ctx.fillStyle = color;
         ctx.fillRect(0, y, w, 1);
+        
+        // Draw symbol overlay occasionally
+        if (y % 40 === 20) {
+            ctx.strokeStyle = '#555'; // Dark grey for visibility on red/white
+            ctx.lineWidth = 1;
+            const cx = w/2;
+            const cy = y;
+            const r = 6;
+            
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+            ctx.stroke();
+            // Dot
+            ctx.fillStyle = '#555';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 1.5, 0, 2 * Math.PI);
+            ctx.fill();
+        }
       }
       
       // Bottom half (Negative)
@@ -59,6 +77,27 @@ const ColorLegend = ({ min = -8, max = -2, width = 20, height = 200, mode = 'mag
         const color = getPotentialColor(val, min, max);
         ctx.fillStyle = color;
         ctx.fillRect(0, y, w, 1);
+        
+        // Draw symbol overlay occasionally
+        if (y % 40 === 20) {
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 1;
+            const cx = w/2;
+            const cy = y;
+            const r = 6;
+            
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+            ctx.stroke();
+            // Cross
+            const rInner = r * 0.6;
+            ctx.beginPath();
+            ctx.moveTo(cx - rInner, cy - rInner);
+            ctx.lineTo(cx + rInner, cy + rInner);
+            ctx.moveTo(cx + rInner, cy - rInner);
+            ctx.lineTo(cx - rInner, cy + rInner);
+            ctx.stroke();
+        }
       }
     }
   }, [min, max, mode]);

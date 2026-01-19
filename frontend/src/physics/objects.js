@@ -90,7 +90,7 @@ export class Magnet {
     this.id = Math.random().toString(36).substr(2, 9);
     this.x = x;
     this.y = y;
-    this.radius = 0.01;
+    this.radius = 0.005;
     this.length = 0.03;
     this.moment = moment;
     this.angle = angle;

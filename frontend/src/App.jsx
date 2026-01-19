@@ -12,7 +12,7 @@ function App() {
     const sim = new MagneticFieldSimulation();
     
     // Add initial objects (matching Python example)
-    sim.addObject(new Coil(-0.05, 0.0, 0.05, 0.20, 100, 2.0));
+    sim.addObject(new Coil(-0.05, 0.0, 0.05, 0.1, 100, 2.0));
     sim.addObject(new Magnet(0.1, 0.2, 0.1));
     
     return sim;
