@@ -83,4 +83,3 @@ Setup:
 ### TODO
 
 Dynamique
-Potentiel vecteur

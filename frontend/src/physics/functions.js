@@ -69,3 +69,25 @@ export function getBz(a, mu, n, current, r, ksi_low, ksi_high) {
   return Bz_high - Bz_low;
 }
 
+export function getLoopAphi(a, mu, current, r, z) {
+  // Vector potential A_phi for a single current loop of radius a
+  // at z distance from plane.
+  // A_phi = (mu * I / (pi * k)) * sqrt(a/r) * [(1 - k^2/2)K(k^2) - E(k^2)]
+  
+  if (r < 1e-10) return 0; // On axis, A_phi is zero by symmetry
+  
+  const k = getK(a, r, z);
+  const k_sq = k * k;
+  
+  // Avoid division by zero if k is very small (far away)
+  if (k < 1e-10) return 0;
+
+  const K = ellipk(k_sq);
+  const E = ellipe(k_sq);
+  
+  const term1 = (1 - k_sq / 2) * K - E;
+  const Aphi = (mu * current / (Math.PI * k)) * Math.sqrt(a / r) * term1;
+  
+  return Aphi;
+}
+

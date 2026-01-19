@@ -3,6 +3,7 @@ import { MagneticFieldSimulation } from './physics/simulation';
 import { Coil, Magnet } from './physics/objects';
 import ArrowVisualization from './components/ArrowVisualization';
 import LineVisualization from './components/LineVisualization';
+import PotentialVisualization from './components/PotentialVisualization';
 import ControlPanel from './components/ControlPanel';
 import ColorLegend from './components/ColorLegend';
 
@@ -53,6 +54,18 @@ function App() {
                 onObjectDrag={handleObjectDrag}
               />
               <ColorLegend />
+            </>
+          ) : viewMode === 'potential' ? (
+            <>
+              <PotentialVisualization
+                simulation={simulation}
+                version={updateCounter}
+                xRange={xRange}
+                yRange={yRange}
+                resolution={resolution}
+                onObjectDrag={handleObjectDrag}
+              />
+              <ColorLegend mode="potential" min={-9} max={-4} />
             </>
           ) : (
             <LineVisualization

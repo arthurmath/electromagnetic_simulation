@@ -3,7 +3,7 @@
  * Ported from simulation.py
  */
 
-import { getBr, getBz } from './functions.js';
+import { getBr, getBz, getLoopAphi } from './functions.js';
 
 const MU_0 = 4 * Math.PI * 1e-7;
 
@@ -41,6 +41,42 @@ export class Coil {
     const By = Bz;
 
     return { Bx, By };
+  }
+
+  potential(x, y) {
+    // Calculate vector potential A_z (which corresponds to A_phi in coil coords)
+    // We sum up the contribution of nTurns loops
+    
+    // Radial distance from coil axis (same as field calculation)
+    const r = Math.abs(x - this.x);
+    // Axial position relative to coil center
+    const z = y - this.y;
+    
+    // Sign convention: 
+    // For By > 0 inside solenoid (positive current), Az must decrease with x (slope < 0).
+    // Az approx -B*x for small x. So sign depends on x.
+    // If x > this.x, (x-this.x) > 0, so Az < 0.
+    // If x < this.x, (x-this.x) < 0, so Az > 0.
+    
+    const sign_x = x - this.x >= 0 ? 1 : -1;
+    
+    let Az = 0;
+    
+    // We approximate the solenoid as nTurns discrete loops
+    const dz = this.length / this.nTurns;
+    
+    for (let i = 0; i < this.nTurns; i++) {
+        // z position of the loop relative to coil center
+        const loop_z_offset = -this.length / 2 + (i + 0.5) * dz;
+        const dist_z = z - loop_z_offset;
+        
+        const loop_A = getLoopAphi(this.radius, this.mu, this.current, r, dist_z);
+        Az += loop_A;
+    }
+    
+    Az = -Az * sign_x;
+    
+    return { Az };
   }
 
   clone() {
@@ -90,6 +126,31 @@ export class Magnet {
     }
 
     return { Bx, By };
+  }
+
+  potential(x, y) {
+    // Vector potential for magnetic dipole
+    // A = (mu / 4pi) * (m x r) / r^3
+    // In 2D plane (z=0), m = (mx, my, 0), r = (dx, dy, 0)
+    // m x r = (0, 0, mx*dy - my*dx)
+    // So Az = (mu / 4pi) * (mx*dy - my*dx) / r^3
+    
+    const dx = x - this.x;
+    const dy = y - this.y;
+    const r_sq = dx * dx + dy * dy;
+    const r = Math.sqrt(r_sq);
+    
+    if (r < 1e-10) return { Az: 0 };
+
+    const angleRad = this.angle * Math.PI / 180;
+    const mx = this.moment * Math.cos(angleRad);
+    const my = this.moment * Math.sin(angleRad);
+    
+    const cross_z = mx * dy - my * dx;
+    
+    const Az = (this.mu / (4 * Math.PI)) * cross_z / Math.pow(r, 3);
+    
+    return { Az };
   }
 
   clone() {

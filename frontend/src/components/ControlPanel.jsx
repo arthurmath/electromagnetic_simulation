@@ -74,6 +74,15 @@ const ControlPanel = ({
           >
             Lines
           </button>
+          <button
+            style={{
+              ...styles.button,
+              ...(viewMode === 'potential' ? styles.buttonActive : {})
+            }}
+            onClick={() => onViewModeChange('potential')}
+          >
+            Potential
+          </button>
         </div>
       </div>
 

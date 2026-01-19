@@ -54,6 +54,38 @@ export class MagneticFieldSimulation {
     return field;
   }
 
+  computePotential(xRange, yRange, resolution) {
+    const [xMin, xMax] = xRange;
+    const [yMin, yMax] = yRange;
+
+    const xStep = (xMax - xMin) / (resolution - 1);
+    const yStep = (yMax - yMin) / (resolution - 1);
+
+    const field = [];
+
+    for (let i = 0; i < resolution; i++) {
+      const row = [];
+      for (let j = 0; j < resolution; j++) {
+        const x = xMin + j * xStep;
+        const y = yMin + i * yStep;
+
+        let Az = 0;
+
+        for (const obj of this.objects) {
+            if (obj.potential) {
+                const { Az: az } = obj.potential(x, y);
+                Az += az;
+            }
+        }
+
+        row.push({ x, y, Az });
+      }
+      field.push(row);
+    }
+
+    return field;
+  }
+
   // Compute field at a single point
   computeFieldAt(x, y) {
     let Bx = 0;
