@@ -17,6 +17,7 @@ export class Coil {
     this.length = length;
     this.nTurns = nTurns;
     this.current = current;
+    this.baseCurrent = current;
     this.mu = mu;
     this.n = nTurns / length; // turns per unit length
   }

@@ -9,13 +9,19 @@ const ControlPanel = ({
   resolution,
   setResolution,
   lineDensity,
-  setLineDensity
+  setLineDensity,
+  simMode,
+  setSimMode,
+  frequency,
+  setFrequency,
+  timeSpeed,
+  setTimeSpeed
 }) => {
   const [selectedObject, setSelectedObject] = useState(null);
   const [showAddMenu, setShowAddMenu] = useState(false);
 
   const handleAddCoil = () => {
-    const newCoil = new Coil(0, 0, 0.05, 0.2, 100, 2.0);
+    const newCoil = new Coil(0, 0, 0.05, 0.1, 100, 2.0);
     simulation.addObject(newCoil);
     onUpdate();
     setShowAddMenu(false);
@@ -46,13 +52,77 @@ const ControlPanel = ({
     const numValue = parseFloat(value);
     if (isNaN(numValue)) return;
 
-    simulation.updateObject(selectedObject.id, { [property]: numValue });
-    setSelectedObject({ ...selectedObject, [property]: numValue });
+    const updates = { [property]: numValue };
+    if (property === 'current') {
+      updates.baseCurrent = numValue;
+    }
+
+    simulation.updateObject(selectedObject.id, updates);
+    setSelectedObject({ ...selectedObject, ...updates });
     onUpdate();
   };
 
   return (
     <div style={styles.container}>
+      <div style={styles.section}>
+        <h3 style={styles.heading}>Simulation Mode</h3>
+        <div style={styles.buttonGroup}>
+          <button
+            style={{
+              ...styles.button,
+              ...(simMode === 'static' ? styles.buttonActive : {})
+            }}
+            onClick={() => setSimMode('static')}
+          >
+            Static
+          </button>
+          <button
+            style={{
+              ...styles.button,
+              ...(simMode === 'dynamic' ? styles.buttonActive : {})
+            }}
+            onClick={() => setSimMode('dynamic')}
+          >
+            Dynamic
+          </button>
+        </div>
+        
+        {simMode === 'dynamic' && (
+          <div style={styles.properties}>
+            <div style={{...styles.property, marginTop: '10px'}}>
+              <div style={styles.sliderHeader}>
+                <label style={styles.label}>Frequency (Hz)</label>
+                <span style={styles.value}>{frequency.toFixed(1)}</span>
+              </div>
+              <input
+                type="range"
+                step="1"
+                min="1"
+                max="50"
+                value={frequency}
+                onChange={(e) => setFrequency(parseFloat(e.target.value))}
+                style={styles.slider}
+              />
+            </div>
+            <div style={styles.property}>
+              <div style={styles.sliderHeader}>
+                <label style={styles.label}>Time Speed</label>
+                <span style={styles.value}>{timeSpeed.toFixed(1)}x</span>
+              </div>
+              <input
+                type="range"
+                step="0.1"
+                min="0.01"
+                max="2.0"
+                value={timeSpeed}
+                onChange={(e) => setTimeSpeed(parseFloat(e.target.value))}
+                style={styles.slider}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       <div style={styles.section}>
         <h3 style={styles.heading}>Visualization Mode</h3>
         <div style={styles.buttonGroup}>
@@ -246,7 +316,7 @@ const ControlPanel = ({
                   <input
                     type="number"
                     step="0.1"
-                    value={selectedObject.current}
+                    value={selectedObject.baseCurrent !== undefined ? selectedObject.baseCurrent : selectedObject.current}
                     onChange={(e) => handlePropertyChange('current', e.target.value)}
                     style={styles.input}
                   />

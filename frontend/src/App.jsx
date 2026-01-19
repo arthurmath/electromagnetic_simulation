@@ -13,7 +13,7 @@ function App() {
     
     // Add initial objects (matching Python example)
     sim.addObject(new Coil(-0.05, 0.0, 0.05, 0.1, 100, 2.0));
-    sim.addObject(new Magnet(0.1, 0.2, 0.1));
+    sim.addObject(new Magnet(0.069, 0.2, 0.1));
     
     return sim;
   });
@@ -22,9 +22,65 @@ function App() {
   const [updateCounter, setUpdateCounter] = useState(0);
   const [resolution, setResolution] = useState(30);
   const [lineDensity, setLineDensity] = useState(1.6);
+  const [simMode, setSimMode] = useState('static');
+  const [frequency, setFrequency] = useState(1.0);
+  const [timeSpeed, setTimeSpeed] = useState(0.1);
+  
+  const animationRef = React.useRef();
+  const phaseRef = React.useRef(0);
+  const lastTimeRef = React.useRef(Date.now());
 
   const xRange = [-0.20, 0.20];
   const yRange = [-0.15, 0.35];
+
+  useEffect(() => {
+    if (simMode === 'dynamic') {
+      lastTimeRef.current = Date.now();
+      
+      const animate = () => {
+        const now = Date.now();
+        const dt = (now - lastTimeRef.current) / 1000;
+        lastTimeRef.current = now;
+        
+        // Update phase: d(phase) = 2*PI * f * dt * speed
+        phaseRef.current += 2 * Math.PI * frequency * dt * timeSpeed;
+        
+        let hasCoils = false;
+        simulation.objects.forEach(obj => {
+          if (obj.type === 'coil') {
+            hasCoils = true;
+            if (obj.baseCurrent === undefined) obj.baseCurrent = obj.current;
+            obj.current = obj.baseCurrent * Math.cos(phaseRef.current);
+          }
+        });
+
+        if (hasCoils) {
+          handleUpdate();
+        }
+        
+        animationRef.current = requestAnimationFrame(animate);
+      };
+      
+      animationRef.current = requestAnimationFrame(animate);
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      // Reset to static state
+      simulation.objects.forEach(obj => {
+        if (obj.type === 'coil' && obj.baseCurrent !== undefined) {
+          obj.current = obj.baseCurrent;
+        }
+      });
+      handleUpdate();
+    }
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [simMode, frequency, timeSpeed, simulation]);
 
   const handleUpdate = () => {
     setUpdateCounter(prev => prev + 1);
@@ -89,6 +145,12 @@ function App() {
           setResolution={setResolution}
           lineDensity={lineDensity}
           setLineDensity={setLineDensity}
+          simMode={simMode}
+          setSimMode={setSimMode}
+          frequency={frequency}
+          setFrequency={setFrequency}
+          timeSpeed={timeSpeed}
+          setTimeSpeed={setTimeSpeed}
         />
       </div>
     </div>
