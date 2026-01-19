@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { getColor } from '../utils/color';
+import { getColor } from '../physics/color';
 
 const ColorLegend = ({ min = -8, max = -2, width = 20, height = 200 }) => {
   const canvasRef = useRef(null);

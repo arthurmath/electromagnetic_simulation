@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { getColor } from '../utils/color';
+import { getColor } from '../physics/color';
 
 const ArrowVisualization = ({ simulation, version, xRange, yRange, resolution, onObjectClick, onObjectDrag }) => {
   const canvasRef = useRef(null);
@@ -125,9 +125,8 @@ const ArrowVisualization = ({ simulation, version, xRange, yRange, resolution, o
     for (const obj of simulation.objects) {
       const dx = worldX - obj.x;
       const dy = worldY - obj.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
 
-      if (distance < obj.radius * 2 || (Math.abs(dx) < obj.radius && Math.abs(dy) < obj.length / 2)) {
+      if (Math.abs(dx) < obj.radius && Math.abs(dy) < obj.length / 2) {
         dragState.current = {
           isDragging: true,
           objectId: obj.id,

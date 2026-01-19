@@ -78,3 +78,11 @@ Setup:
 - × button: Delete an object
 - Arrows/Lines buttons: Switch visualization mode
 
+
+
+### TODO
+
+Bug catch coils
+Sens aimants
+Dynamique
+Potentiel vecteur
