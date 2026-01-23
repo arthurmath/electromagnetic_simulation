@@ -1,6 +1,5 @@
 /**
  * Elliptic integral functions
- * Port from Python scipy.special to JavaScript
  */
 
 // Complete elliptic integral of the first kind K(m)

@@ -8,10 +8,11 @@ import ControlPanel from './components/ControlPanel';
 import ColorLegend from './components/ColorLegend';
 
 function App() {
+  // This creates a state variable 'simulation' and initializes it only once
   const [simulation] = useState(() => {
     const sim = new MagneticFieldSimulation();
     
-    // Add initial objects (matching Python example)
+    // Add initial objects 
     sim.addObject(new Coil(-0.05, 0.0, 0.05, 0.1, 100, 2.0));
     sim.addObject(new Magnet(0.069, 0.2, 0.1));
     
@@ -33,6 +34,7 @@ function App() {
   const xRange = [-0.20, 0.20];
   const yRange = [-0.15, 0.35];
 
+  // Runs only if the list dependencies change (line 85)
   useEffect(() => {
     if (simMode === 'dynamic') {
       lastTimeRef.current = Date.now();
@@ -51,16 +53,21 @@ function App() {
             hasCoils = true;
             if (obj.baseCurrent === undefined) obj.baseCurrent = obj.current;
             obj.current = obj.baseCurrent * Math.cos(phaseRef.current);
+            // // Use a sawtooth wave: ranges from -1 to 1 over a period [0, 2*PI]
+            // const period = 2 * Math.PI;
+            // const t = phaseRef.current;
+            // const saw = 2 * (t / period - Math.floor(t / period)) - 1;
+            // obj.current = obj.baseCurrent * saw;
           }
         });
 
         if (hasCoils) {
           handleUpdate();
         }
-        
+        // Continue la boucle à l'infini (ré-appelle animate)
         animationRef.current = requestAnimationFrame(animate);
       };
-      
+      // Lance le 1er appel de animate
       animationRef.current = requestAnimationFrame(animate);
     } else {
       if (animationRef.current) {
@@ -72,6 +79,7 @@ function App() {
           obj.current = obj.baseCurrent;
         }
       });
+      // Modifie UpdateCounter -> déclenche le UseEffect de ArrowVisualization -> redessine le champ
       handleUpdate();
     }
 

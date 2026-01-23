@@ -1,6 +1,5 @@
 /**
  * Coil and Magnet classes
- * Ported from simulation.py
  */
 
 import { getBr, getBz, getLoopAphi } from './functions.js';

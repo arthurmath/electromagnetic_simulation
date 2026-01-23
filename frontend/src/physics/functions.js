@@ -1,6 +1,5 @@
 /**
  * Magnetic field calculation functions
- * Ported from functions.py
  */
 
 import { ellipk, ellipe, heuman_lambda } from './elliptic.js';
@@ -31,10 +30,8 @@ export function getBr(a, mu, n, current, r, ksi_low, ksi_high) {
   const K_low = ellipk(k_low * k_low);
   const E_low = ellipe(k_low * k_low);
   
-  const Br_high = (mu * n * current / Math.PI) * Math.sqrt(a / r) * 
-                  (((2 - k_high * k_high) / (2 * k_high)) * K_high - E_high / k_high);
-  const Br_low = (mu * n * current / Math.PI) * Math.sqrt(a / r) * 
-                 (((2 - k_low * k_low) / (2 * k_low)) * K_low - E_low / k_low);
+  const Br_high = (mu * n * current / Math.PI) * Math.sqrt(a / r) * (((2 - k_high * k_high) / (2 * k_high)) * K_high - E_high / k_high);
+  const Br_low = (mu * n * current / Math.PI) * Math.sqrt(a / r) * (((2 - k_low * k_low) / (2 * k_low)) * K_low - E_low / k_low);
   
   return Br_high - Br_low;
 }
@@ -59,12 +56,8 @@ export function getBz(a, mu, n, current, r, ksi_low, ksi_high) {
   const sign_high = product_high / Math.abs(product_high);
   const sign_low = product_low / Math.abs(product_low);
   
-  const Bz_high = (mu * n * current / 4) * 
-                  (((ksi_high * k_high) / (Math.PI * sqrt_ar) * K_high) + 
-                   (sign_high * heuman_lambda(phi_high, k_high)));
-  const Bz_low = (mu * n * current / 4) * 
-                 (((ksi_low * k_low) / (Math.PI * sqrt_ar) * K_low) + 
-                  (sign_low * heuman_lambda(phi_low, k_low)));
+  const Bz_high = (mu * n * current / 4) * (((ksi_high * k_high) / (Math.PI * sqrt_ar) * K_high) + (sign_high * heuman_lambda(phi_high, k_high)));
+  const Bz_low = (mu * n * current / 4) * (((ksi_low * k_low) / (Math.PI * sqrt_ar) * K_low) + (sign_low * heuman_lambda(phi_low, k_low)));
   
   return Bz_high - Bz_low;
 }

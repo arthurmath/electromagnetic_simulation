@@ -43,14 +43,18 @@ const ArrowVisualization = ({ simulation, version, xRange, yRange, resolution, o
         const cx = toCanvasX(x);
         const cy = toCanvasY(y);
 
-        // Arrow length - Increase the multiplier to make arrows bigger
-        const arrowLen = arrowScale * 1.5;
-        const ex = cx + nx * arrowLen;
-        const ey = cy - ny * arrowLen; // Invert y for canvas
-
         // Color based on magnitude
         const logMag = Math.log10(magnitude + 1e-20);
         const color = getColor(logMag, -8, -2);
+
+        // Arrow length based on intensity
+        const minLog = -8;
+        const maxLog = -2;
+        const intensity = Math.max(0, Math.min(1, (logMag - minLog) / (maxLog - minLog)));
+        const arrowLen = arrowScale * (0.5 + 1.5 * intensity);
+
+        const ex = cx + nx * arrowLen;
+        const ey = cy - ny * arrowLen; // Invert y for canvas
 
         // Draw arrow
         ctx.strokeStyle = color;
