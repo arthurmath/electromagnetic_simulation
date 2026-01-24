@@ -84,6 +84,73 @@ export class Coil {
   }
 }
 
+export class MeasurementCoil {
+  constructor(x, y, radius = 0.03, length = 0.05, nTurns = 50, resistance = 10) {
+    this.type = 'measurementCoil';
+    this.id = Math.random().toString(36).substr(2, 9);
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.length = length;
+    this.nTurns = nTurns;
+    this.resistance = resistance;
+    
+    // Induced current state
+    this.inducedCurrent = 0;
+    this.previousFlux = null;
+  }
+
+  // MeasurementCoil does not generate magnetic field - it only measures
+  field(x, y) {
+    return { Bx: 0, By: 0 };
+  }
+
+  potential(x, y) {
+    return { Az: 0 };
+  }
+
+  // Compute the magnetic flux through the coil from external fields
+  // Uses average B field at the center times area (simple approximation)
+  computeFlux(simulation) {
+    // Get B field at center of coil (excluding self since we don't generate field)
+    let Bx = 0, By = 0;
+    for (const obj of simulation.objects) {
+      if (obj.id === this.id) continue; // Skip self
+      const { Bx: bx, By: by } = obj.field(this.x, this.y);
+      Bx += bx;
+      By += by;
+    }
+    
+    // The coil is oriented along Y axis, so flux is By * Area
+    // Area = pi * r^2, and we have nTurns loops
+    const area = Math.PI * this.radius * this.radius;
+    const flux = By * area * this.nTurns;
+    
+    return flux;
+  }
+
+  // Update induced current using Faraday's law: EMF = -dΦ/dt, I = EMF/R
+  updateInducedCurrent(simulation, dt) {
+    const currentFlux = this.computeFlux(simulation);
+    
+    if (this.previousFlux !== null && dt > 0) {
+      const dFlux = currentFlux - this.previousFlux;
+      const e = -dFlux / dt;
+      this.inducedCurrent = e / this.resistance;
+    }
+    
+    this.previousFlux = currentFlux;
+    return this.inducedCurrent;
+  }
+
+  clone() {
+    const clone = new MeasurementCoil(this.x, this.y, this.radius, this.length, this.nTurns, this.resistance);
+    clone.inducedCurrent = this.inducedCurrent;
+    clone.previousFlux = this.previousFlux;
+    return clone;
+  }
+}
+
 export class Magnet {
   constructor(x, y, moment = 0.1, angle = 90, mu = MU_0) {
     this.type = 'magnet';
@@ -115,7 +182,6 @@ export class Magnet {
     const mx = this.moment * Math.cos(angleRad);
     const my = this.moment * Math.sin(angleRad);
     const dot_mr = mx * dx + my * dy;
-
     let Bx = this.mu / (4 * Math.PI * Math.pow(r, 5)) * (3 * dot_mr * dx - mx * r_sq);
     let By = this.mu / (4 * Math.PI * Math.pow(r, 5)) * (3 * dot_mr * dy - my * r_sq);
 

@@ -99,5 +99,26 @@ export class MagneticFieldSimulation {
 
     return { Bx, By };
   }
+
+  // Update all measurement coils with their induced currents
+  updateMeasurementCoils(dt) {
+    for (const obj of this.objects) {
+      if (obj.type === 'measurementCoil') {
+        obj.updateInducedCurrent(this, dt);
+      }
+    }
+  }
+
+  // Get all measurement coils with their current values
+  getMeasurementCoilData() {
+    return this.objects
+      .filter(obj => obj.type === 'measurementCoil')
+      .map(obj => ({
+        id: obj.id,
+        x: obj.x,
+        y: obj.y,
+        inducedCurrent: obj.inducedCurrent
+      }));
+  }
 }
 

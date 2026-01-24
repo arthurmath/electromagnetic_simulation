@@ -91,30 +91,57 @@ const ArrowVisualization = ({ simulation, version, xRange, yRange, resolution, o
         ctx.setLineDash([5, 5]);
         ctx.strokeRect(cx - radiusX, cy - lengthY / 2, radiusX * 2, lengthY);
         ctx.setLineDash([]);
-
         // Center mark
         ctx.fillStyle = '#0000ff';
         ctx.beginPath();
         ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
         ctx.fill();
+
       } else if (obj.type === 'magnet') {
         ctx.save();
         ctx.translate(cx, cy);
         ctx.rotate((90 - (obj.angle ?? 90)) * Math.PI / 180);
-
         ctx.strokeStyle = '#ff0000';
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 5]);
         ctx.strokeRect(-radiusX, -lengthY / 2, radiusX * 2, lengthY);
         ctx.setLineDash([]);
-
         // Center mark
         ctx.fillStyle = '#ff0000';
         ctx.beginPath();
         ctx.arc(0, 0, 4, 0, 2 * Math.PI);
         ctx.fill();
-
         ctx.restore();
+
+      } else if (obj.type === 'measurementCoil') {
+        ctx.strokeStyle = '#00aa00';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([]);
+        ctx.strokeRect(cx - radiusX, cy - lengthY / 2, radiusX * 2, lengthY);
+        // Center mark
+        ctx.fillStyle = '#00aa00';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
+        ctx.fill();
+          // Display induced current at the center (in mA for readability)
+          const currentMA = obj.inducedCurrent * 1000;
+          const currentText = `${currentMA.toFixed(2)} mA`;
+          ctx.font = 'bold 14px Arial';
+          ctx.fillStyle = '#000';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+        // Draw white background for readability
+        const textMetrics = ctx.measureText(currentText);
+        const padding = 4;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.fillRect(
+          cx - textMetrics.width / 2 - padding,
+          cy - 8 - padding,
+          textMetrics.width + padding * 2,
+          16 + padding * 2
+        );
+        ctx.fillStyle = '#00aa00';
+        ctx.fillText(currentText, cx, cy);
       }
     });
 

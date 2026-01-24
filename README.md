@@ -38,3 +38,7 @@ Setup:
 5. Quit:
    Press q + enter
 
+
+## TODO
+
+Magnetic rope

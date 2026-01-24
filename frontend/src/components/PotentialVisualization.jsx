@@ -132,6 +132,40 @@ const PotentialVisualization = ({ simulation, version, xRange, yRange, resolutio
         ctx.fill();
 
         ctx.restore();
+      } else if (obj.type === 'measurementCoil') {
+        // Draw measurement coil in green with solid line
+        ctx.strokeStyle = '#00aa00';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([]);
+        ctx.strokeRect(cx - radiusX, cy - lengthY / 2, radiusX * 2, lengthY);
+
+        // Center mark
+        ctx.fillStyle = '#00aa00';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
+        ctx.fill();
+
+        // Display induced current at the center (in mA for readability)
+        const currentMA = obj.inducedCurrent * 1000;
+        const currentText = `${currentMA.toFixed(2)} mA`;
+        ctx.font = 'bold 14px Arial';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Draw white background for readability
+        const textMetrics = ctx.measureText(currentText);
+        const padding = 4;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.fillRect(
+          cx - textMetrics.width / 2 - padding,
+          cy - 8 - padding,
+          textMetrics.width + padding * 2,
+          16 + padding * 2
+        );
+        
+        ctx.fillStyle = '#00aa00';
+        ctx.fillText(currentText, cx, cy);
       }
     });
 

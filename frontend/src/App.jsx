@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MagneticFieldSimulation } from './physics/simulation';
-import { Coil, Magnet } from './physics/objects';
+import { Coil, Magnet, MeasurementCoil } from './physics/objects';
 import ArrowVisualization from './components/ArrowVisualization';
 import LineVisualization from './components/LineVisualization';
 import PotentialVisualization from './components/PotentialVisualization';
@@ -15,6 +15,7 @@ function App() {
     // Add initial objects 
     sim.addObject(new Coil(-0.05, 0.0, 0.05, 0.1, 100, 2.0));
     sim.addObject(new Magnet(0.069, 0.2, 0.1));
+    sim.addObject(new MeasurementCoil(-0.1, 0.2, 0.03, 0.05, 50, 10));
     
     return sim;
   });
@@ -44,7 +45,7 @@ function App() {
         const dt = (now - lastTimeRef.current) / 1000;
         lastTimeRef.current = now;
         
-        // Update phase: d(phase) = 2*PI * f * dt * speed
+        // Update phase: d(phase) = 2pi * f * dt * speed
         phaseRef.current += 2 * Math.PI * frequency * dt * timeSpeed;
         
         let hasCoils = false;
@@ -53,15 +54,14 @@ function App() {
             hasCoils = true;
             if (obj.baseCurrent === undefined) obj.baseCurrent = obj.current;
             obj.current = obj.baseCurrent * Math.cos(phaseRef.current);
-            // // Use a sawtooth wave: ranges from -1 to 1 over a period [0, 2*PI]
-            // const period = 2 * Math.PI;
-            // const t = phaseRef.current;
-            // const saw = 2 * (t / period - Math.floor(t / period)) - 1;
-            // obj.current = obj.baseCurrent * saw;
           }
         });
 
+        // Update measurement coils with the actual time step (accounting for time speed)
+        simulation.updateMeasurementCoils(dt * timeSpeed);
+
         if (hasCoils) {
+          // Modifie UpdateCounter -> déclenche le UseEffect de ArrowVisualization -> redessine le champ
           handleUpdate();
         }
         // Continue la boucle à l'infini (ré-appelle animate)
@@ -71,6 +71,7 @@ function App() {
       animationRef.current = requestAnimationFrame(animate);
     } else {
       if (animationRef.current) {
+        // Arrete la boucle
         cancelAnimationFrame(animationRef.current);
       }
       // Reset to static state
@@ -78,13 +79,18 @@ function App() {
         if (obj.type === 'coil' && obj.baseCurrent !== undefined) {
           obj.current = obj.baseCurrent;
         }
+        // Reset measurement coils - in static mode, no induced current (dΦ/dt = 0)
+        if (obj.type === 'measurementCoil') {
+          obj.inducedCurrent = 0;
+          obj.previousFlux = null;
+        }
       });
-      // Modifie UpdateCounter -> déclenche le UseEffect de ArrowVisualization -> redessine le champ
       handleUpdate();
     }
 
     return () => {
       if (animationRef.current) {
+        // Finally, clean memory
         cancelAnimationFrame(animationRef.current);
       }
     };

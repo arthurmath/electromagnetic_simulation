@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Coil, Magnet } from '../physics/objects';
+import { Coil, Magnet, MeasurementCoil } from '../physics/objects';
 
 const ControlPanel = ({ 
   simulation, 
@@ -30,6 +30,13 @@ const ControlPanel = ({
   const handleAddMagnet = () => {
     const newMagnet = new Magnet(0, 0, 0.1, 90);
     simulation.addObject(newMagnet);
+    onUpdate();
+    setShowAddMenu(false);
+  };
+
+  const handleAddMeasurementCoil = () => {
+    const newMeasurementCoil = new MeasurementCoil(0, 0, 0.03, 0.05, 50, 10);
+    simulation.addObject(newMeasurementCoil);
     onUpdate();
     setShowAddMenu(false);
   };
@@ -211,6 +218,9 @@ const ControlPanel = ({
             <button style={styles.menuButton} onClick={handleAddMagnet}>
               Add Magnet
             </button>
+            <button style={styles.menuButton} onClick={handleAddMeasurementCoil}>
+              Add Measurement Coil
+            </button>
           </div>
         )}
 
@@ -225,7 +235,11 @@ const ControlPanel = ({
               onClick={() => handleObjectSelect(obj)}
             >
               <div style={styles.objectInfo}>
-                <strong>{obj.type === 'coil' ? '🔋 Coil' : '🧲 Magnet'}</strong>
+                <strong>
+                  {obj.type === 'coil' ? '🔋 Coil' : 
+                   obj.type === 'magnet' ? '🧲 Magnet' : 
+                   '📏 Measurement Coil'}
+                </strong>
                 <div style={styles.objectCoords}>
                   ({obj.x.toFixed(3)}, {obj.y.toFixed(3)})
                 </div>
@@ -351,6 +365,67 @@ const ControlPanel = ({
                       }
                     }}
                     style={styles.input}
+                  />
+                </div>
+              </>
+            )}
+
+            {selectedObject.type === 'measurementCoil' && (
+              <>
+                <div style={styles.property}>
+                  <label style={styles.label}>Radius (m)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={selectedObject.radius}
+                    onChange={(e) => handlePropertyChange('radius', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Length (m)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={selectedObject.length}
+                    onChange={(e) => handlePropertyChange('length', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Number of Turns</label>
+                  <input
+                    type="number"
+                    step="10"
+                    value={selectedObject.nTurns}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      if (!isNaN(val)) {
+                        simulation.updateObject(selectedObject.id, { nTurns: val });
+                        setSelectedObject({ ...selectedObject, nTurns: val });
+                        onUpdate();
+                      }
+                    }}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Resistance (Ω)</label>
+                  <input
+                    type="number"
+                    step="1"
+                    value={selectedObject.resistance}
+                    onChange={(e) => handlePropertyChange('resistance', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Induced Current (mA)</label>
+                  <input
+                    type="text"
+                    value={((selectedObject.inducedCurrent ?? 0) * 1000).toFixed(4)}
+                    readOnly
+                    style={{...styles.input, backgroundColor: '#f0f0f0'}}
                   />
                 </div>
               </>
