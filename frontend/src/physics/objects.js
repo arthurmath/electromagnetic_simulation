@@ -7,7 +7,7 @@ import { getBr, getBz, getLoopAphi } from './functions.js';
 const MU_0 = 4 * Math.PI * 1e-7;
 
 export class Coil {
-  constructor(x, y, radius, length, nTurns, current, mu = MU_0) {
+  constructor(x, y, radius=0.03, length=0.05, nTurns=100, current=2.0, mu=MU_0) { 
     this.type = 'coil';
     this.id = Math.random().toString(36).substr(2, 9);
     this.x = x;
@@ -85,7 +85,7 @@ export class Coil {
 }
 
 export class MeasurementCoil {
-  constructor(x, y, radius = 0.03, length = 0.05, nTurns = 500, resistance = 10) {
+  constructor(x, y, radius = 0.03, length = 0.05, nTurns = 200, resistance = 10) {
     this.type = 'measurementCoil';
     this.id = Math.random().toString(36).substr(2, 9);
     this.x = x;

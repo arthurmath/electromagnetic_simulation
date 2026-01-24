@@ -13,9 +13,9 @@ function App() {
     const sim = new MagneticFieldSimulation();
     
     // Add initial objects 
-    sim.addObject(new Coil(-0.05, 0.0, 0.05, 0.1, 100, 2.0));
-    sim.addObject(new Magnet(0.069, 0.2, 0.1));
-    sim.addObject(new MeasurementCoil(-0.1, 0.2, 0.03, 0.05, 50, 10));
+    sim.addObject(new Coil(-0.05, 0.0));
+    sim.addObject(new Magnet(0.069, 0.2));
+    sim.addObject(new MeasurementCoil(-0.1, 0.2));
     
     return sim;
   });
@@ -26,7 +26,7 @@ function App() {
   const [lineDensity, setLineDensity] = useState(1.6);
   const [simMode, setSimMode] = useState('static');
   const [frequency, setFrequency] = useState(1.0);
-  const [timeSpeed, setTimeSpeed] = useState(0.1);
+  const [timeSpeed, setTimeSpeed] = useState(1.0);
   
   const animationRef = React.useRef();
   const phaseRef = React.useRef(0);
@@ -177,16 +177,16 @@ const styles = {
     flexDirection: 'column',
     height: '100vh',
     backgroundColor: '#fff',
-    fontFamily: 'Arial, sans-serif'
+    fontFamily: 'Arial, sans-serif',
   },
   header: {
-    padding: '20px 30px',
+    padding: '10px 30px',
     backgroundColor: '#2c3e50',
     color: 'white',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
   },
   title: {
-    margin: '0 0 15px 0',
+    margin: '10px 0 15px 0',
     fontSize: '24px',
     fontWeight: 'bold'
   },
@@ -198,11 +198,12 @@ const styles = {
   canvas: {
     flex: 1,
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     padding: '20px',
+    paddingLeft: '30px',
     backgroundColor: '#f9f9f9',
-    position: 'relative'
+    position: 'relative',
   }
 };
 

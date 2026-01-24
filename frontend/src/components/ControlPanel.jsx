@@ -21,21 +21,21 @@ const ControlPanel = ({
   const [showAddMenu, setShowAddMenu] = useState(false);
 
   const handleAddCoil = () => {
-    const newCoil = new Coil(0, 0, 0.05, 0.1, 100, 2.0);
+    const newCoil = new Coil();
     simulation.addObject(newCoil);
     onUpdate();
     setShowAddMenu(false);
   };
 
   const handleAddMagnet = () => {
-    const newMagnet = new Magnet(0, 0, 0.1, 90);
+    const newMagnet = new Magnet();
     simulation.addObject(newMagnet);
     onUpdate();
     setShowAddMenu(false);
   };
 
   const handleAddMeasurementCoil = () => {
-    const newMeasurementCoil = new MeasurementCoil(0, 0, 0.03, 0.05, 50, 10);
+    const newMeasurementCoil = new MeasurementCoil();
     simulation.addObject(newMeasurementCoil);
     onUpdate();
     setShowAddMenu(false);
@@ -118,9 +118,9 @@ const ControlPanel = ({
               </div>
               <input
                 type="range"
-                step="0.1"
+                step="0.01"
                 min="0.01"
-                max="2.0"
+                max="1.0"
                 value={timeSpeed}
                 onChange={(e) => setTimeSpeed(parseFloat(e.target.value))}
                 style={styles.slider}

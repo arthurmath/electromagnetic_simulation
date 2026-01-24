@@ -55,13 +55,12 @@ const LineVisualization = ({ simulation, version, xRange, yRange, resolution, de
       const lengthY = (obj.length / (yRange[1] - yRange[0])) * height;
 
       if (obj.type === 'coil') {
-        ctx.strokeStyle = '#0000ff';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
-        ctx.strokeRect(cx - radiusX, cy - lengthY / 2, radiusX * 2, lengthY);
+        ctx.strokeStyle = '#00aa00';
+        ctx.lineWidth = 3;
         ctx.setLineDash([]);
+        ctx.strokeRect(cx - radiusX, cy - lengthY / 2, radiusX * 2, lengthY);
 
-        ctx.fillStyle = '#0000ff';
+        ctx.fillStyle = '#00aa00';
         ctx.beginPath();
         ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
         ctx.fill();
@@ -71,10 +70,9 @@ const LineVisualization = ({ simulation, version, xRange, yRange, resolution, de
         ctx.rotate((90 - (obj.angle ?? 90)) * Math.PI / 180);
 
         ctx.strokeStyle = '#ff0000';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
-        ctx.strokeRect(-radiusX, -lengthY / 2, radiusX * 2, lengthY);
+        ctx.lineWidth = 3;
         ctx.setLineDash([]);
+        ctx.strokeRect(-radiusX, -lengthY / 2, radiusX * 2, lengthY);
 
         // Center mark
         ctx.fillStyle = '#ff0000';
@@ -84,14 +82,14 @@ const LineVisualization = ({ simulation, version, xRange, yRange, resolution, de
 
         ctx.restore();
       } else if (obj.type === 'measurementCoil') {
-        // Draw measurement coil in green with solid line
-        ctx.strokeStyle = '#00aa00';
+        // Draw measurement coil in blue with solid line
+        ctx.strokeStyle = '#0000ff';
         ctx.lineWidth = 3;
         ctx.setLineDash([]);
         ctx.strokeRect(cx - radiusX, cy - lengthY / 2, radiusX * 2, lengthY);
 
         // Center mark
-        ctx.fillStyle = '#00aa00';
+        ctx.fillStyle = '#0000ff';
         ctx.beginPath();
         ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
         ctx.fill();
@@ -115,7 +113,7 @@ const LineVisualization = ({ simulation, version, xRange, yRange, resolution, de
           16 + padding * 2
         );
         
-        ctx.fillStyle = '#00aa00';
+        ctx.fillStyle = '#0000ff';
         ctx.fillText(currentText, cx, cy);
       }
     });
@@ -250,8 +248,8 @@ const LineVisualization = ({ simulation, version, xRange, yRange, resolution, de
   return (
     <canvas
       ref={canvasRef}
-      width={800}
-      height={600}
+      width={1000}
+      height={650}
       style={{ border: '1px solid #ccc', cursor: dragState.current.isDragging ? 'grabbing' : 'grab' }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
