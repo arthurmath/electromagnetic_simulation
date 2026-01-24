@@ -41,4 +41,6 @@ Setup:
 
 ## TODO
 
+agrandir canva
+diminuer lignes vertes measurement coil
 Magnetic rope

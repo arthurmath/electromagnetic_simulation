@@ -97,7 +97,7 @@ const LineVisualization = ({ simulation, version, xRange, yRange, resolution, de
         ctx.fill();
 
         // Display induced current at the center (in mA for readability)
-        const currentMA = obj.inducedCurrent * 1000;
+        const currentMA = (obj.inducedCurrent || 0) * 1000;
         const currentText = `${currentMA.toFixed(2)} mA`;
         ctx.font = 'bold 14px Arial';
         ctx.fillStyle = '#000';

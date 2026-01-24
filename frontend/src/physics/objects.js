@@ -85,7 +85,7 @@ export class Coil {
 }
 
 export class MeasurementCoil {
-  constructor(x, y, radius = 0.03, length = 0.05, nTurns = 50, resistance = 10) {
+  constructor(x, y, radius = 0.03, length = 0.05, nTurns = 500, resistance = 10) {
     this.type = 'measurementCoil';
     this.id = Math.random().toString(36).substr(2, 9);
     this.x = x;
@@ -129,7 +129,7 @@ export class MeasurementCoil {
     return flux;
   }
 
-  // Update induced current using Faraday's law: EMF = -dΦ/dt, I = EMF/R
+  // Update induced current using Faraday's law: e = -dΦ/dt, I = e/R
   updateInducedCurrent(simulation, dt) {
     const currentFlux = this.computeFlux(simulation);
     
