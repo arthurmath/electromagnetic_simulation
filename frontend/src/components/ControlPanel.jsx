@@ -21,21 +21,21 @@ const ControlPanel = ({
   const [showAddMenu, setShowAddMenu] = useState(false);
 
   const handleAddCoil = () => {
-    const newCoil = new Coil();
+    const newCoil = new Coil(0, 0);
     simulation.addObject(newCoil);
     onUpdate();
     setShowAddMenu(false);
   };
 
   const handleAddMagnet = () => {
-    const newMagnet = new Magnet();
+    const newMagnet = new Magnet(0, 0);
     simulation.addObject(newMagnet);
     onUpdate();
     setShowAddMenu(false);
   };
 
   const handleAddMeasurementCoil = () => {
-    const newMeasurementCoil = new MeasurementCoil();
+    const newMeasurementCoil = new MeasurementCoil(0, 0);
     simulation.addObject(newMeasurementCoil);
     onUpdate();
     setShowAddMenu(false);
