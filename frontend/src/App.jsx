@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MagneticFieldSimulation } from './physics/simulation';
-import { Coil, Magnet, MeasurementCoil } from './physics/objects';
+import { Coil, Magnet, MeasurementCoil, Rope } from './physics/objects';
 import ArrowVisualization from './components/ArrowVisualization';
 import LineVisualization from './components/LineVisualization';
 import PotentialVisualization from './components/PotentialVisualization';
@@ -16,6 +16,7 @@ function App() {
     sim.addObject(new Coil(-0.05, 0.0));
     sim.addObject(new Magnet(0.069, 0.2));
     sim.addObject(new MeasurementCoil(-0.1, 0.2));
+    sim.addObject(new Rope(-0.1));
     
     return sim;
   });

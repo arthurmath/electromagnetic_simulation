@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Coil, Magnet, MeasurementCoil } from '../physics/objects';
+import { Coil, Magnet, MeasurementCoil, Rope } from '../physics/objects';
 
 const ControlPanel = ({ 
   simulation, 
@@ -37,6 +37,13 @@ const ControlPanel = ({
   const handleAddMeasurementCoil = () => {
     const newMeasurementCoil = new MeasurementCoil(0, 0);
     simulation.addObject(newMeasurementCoil);
+    onUpdate();
+    setShowAddMenu(false);
+  };
+
+  const handleAddRope = () => {
+    const newRope = new Rope(0);
+    simulation.addObject(newRope);
     onUpdate();
     setShowAddMenu(false);
   };
@@ -221,6 +228,9 @@ const ControlPanel = ({
             <button style={styles.menuButton} onClick={handleAddMeasurementCoil}>
               Add Measurement Coil
             </button>
+            <button style={styles.menuButton} onClick={handleAddRope}>
+              Add Rope
+            </button>
           </div>
         )}
 
@@ -238,6 +248,7 @@ const ControlPanel = ({
                 <strong>
                   {obj.type === 'coil' ? '🔋 Coil' : 
                    obj.type === 'magnet' ? '🧲 Magnet' : 
+                   obj.type === 'rope' ? '🪢 Rope' :
                    '📏 Measurement Coil'}
                 </strong>
                 <div style={styles.objectCoords}>
@@ -262,16 +273,18 @@ const ControlPanel = ({
         <div style={styles.section}>
           <h3 style={styles.heading}>Properties</h3>
           <div style={styles.properties}>
-            <div style={styles.property}>
-              <label style={styles.label}>X Position (m)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={selectedObject.x}
-                onChange={(e) => handlePropertyChange('x', e.target.value)}
-                style={styles.input}
-              />
-            </div>
+            {selectedObject.type !== 'rope' && (
+              <div style={styles.property}>
+                <label style={styles.label}>X Position (m)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={selectedObject.x}
+                  onChange={(e) => handlePropertyChange('x', e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+            )}
             <div style={styles.property}>
               <label style={styles.label}>Y Position (m)</label>
               <input
@@ -426,6 +439,41 @@ const ControlPanel = ({
                     value={((selectedObject.inducedCurrent ?? 0) * 1000).toFixed(4)}
                     readOnly
                     style={{...styles.input, backgroundColor: '#f0f0f0'}}
+                  />
+                </div>
+              </>
+            )}
+
+            {selectedObject.type === 'rope' && (
+              <>
+                <div style={styles.property}>
+                  <label style={styles.label}>Length (m)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={selectedObject.length}
+                    onChange={(e) => handlePropertyChange('length', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Density (dipoles/m)</label>
+                  <input
+                    type="number"
+                    step="10"
+                    value={selectedObject.density}
+                    onChange={(e) => handlePropertyChange('density', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Dipole Moment (A·m²)</label>
+                  <input
+                    type="number"
+                    step="1e-7"
+                    value={selectedObject.dipoleMoment}
+                    onChange={(e) => handlePropertyChange('dipoleMoment', e.target.value)}
+                    style={styles.input}
                   />
                 </div>
               </>

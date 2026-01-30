@@ -41,4 +41,4 @@ Setup:
 
 ## TODO
 
-Magnetic rope
+Couplage mecanique rope

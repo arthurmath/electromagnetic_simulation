@@ -22,7 +22,19 @@ export class MagneticFieldSimulation {
     }
   }
 
+  // Update rope dipole alignments based on external fields
+  updateRopes() {
+    for (const obj of this.objects) {
+      if (obj.type === 'rope') {
+        obj.updateAlignment(this);
+      }
+    }
+  }
+
   computeField(xRange, yRange, resolution) {
+    // Update rope alignments before computing field
+    this.updateRopes();
+
     const [xMin, xMax] = xRange;
     const [yMin, yMax] = yRange;
 
@@ -55,6 +67,9 @@ export class MagneticFieldSimulation {
   }
 
   computePotential(xRange, yRange, resolution) {
+    // Update rope alignments before computing potential
+    this.updateRopes();
+
     const [xMin, xMax] = xRange;
     const [yMin, yMax] = yRange;
 
@@ -87,7 +102,7 @@ export class MagneticFieldSimulation {
   }
 
   // Compute field at a single point
-  computeFieldAt(x, y) {
+  computeLine(x, y) {
     let Bx = 0;
     let By = 0;
 
@@ -107,18 +122,6 @@ export class MagneticFieldSimulation {
         obj.updateInducedCurrent(this, dt);
       }
     }
-  }
-
-  // Get all measurement coils with their current values
-  getMeasurementCoilData() {
-    return this.objects
-      .filter(obj => obj.type === 'measurementCoil')
-      .map(obj => ({
-        id: obj.id,
-        x: obj.x,
-        y: obj.y,
-        inducedCurrent: obj.inducedCurrent
-      }));
   }
 }
 

@@ -140,6 +140,31 @@ const ArrowVisualization = ({ simulation, version, xRange, yRange, resolution, o
         );
         ctx.fillStyle = '#0000ff';
         ctx.fillText(currentText, cx, cy);
+
+      } else if (obj.type === 'rope') {
+        // Draw rope as a horizontal line
+        const ropeY = toCanvasY(obj.y);
+        const ropeLength = (obj.length / (xRange[1] - xRange[0])) * width;
+        const ropeStartX = toCanvasX(-obj.length / 2);
+        
+        ctx.strokeStyle = '#8B4513'; // Brown color for rope
+        ctx.lineWidth = 3;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(ropeStartX, ropeY);
+        ctx.lineTo(ropeStartX + ropeLength, ropeY);
+        ctx.stroke();
+        
+        // Draw small marks at dipole positions
+        if (obj.dipoles) {
+          ctx.fillStyle = '#8B4513';
+          for (const dipole of obj.dipoles) {
+            const dx = toCanvasX(dipole.x);
+            ctx.beginPath();
+            ctx.arc(dx, ropeY, 2, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        }
       }
     });
 
@@ -158,6 +183,23 @@ const ArrowVisualization = ({ simulation, version, xRange, yRange, resolution, o
 
     // Check if clicking on an object
     for (const obj of simulation.objects) {
+      // Rope cannot be moved horizontally
+      if (obj.type === 'rope') {
+        const dy = worldY - obj.y;
+        // Check if within vertical threshold for rope
+        if (Math.abs(dy) < 0.01 && worldX >= -obj.length / 2 && worldX <= obj.length / 2) {
+          dragState.current = {
+            isDragging: true,
+            objectId: obj.id,
+            offsetX: 0,
+            offsetY: dy,
+            isRope: true
+          };
+          return;
+        }
+        continue;
+      }
+      
       const dx = worldX - obj.x;
       const dy = worldY - obj.y;
 
@@ -184,10 +226,15 @@ const ArrowVisualization = ({ simulation, version, xRange, yRange, resolution, o
     const worldX = xRange[0] + (mouseX / canvas.width) * (xRange[1] - xRange[0]);
     const worldY = yRange[1] - (mouseY / canvas.height) * (yRange[1] - yRange[0]);
 
-    const newX = worldX - dragState.current.offsetX;
     const newY = worldY - dragState.current.offsetY;
-
-    onObjectDrag(dragState.current.objectId, newX, newY);
+    
+    // For rope, only allow Y movement (X is fixed at 0)
+    if (dragState.current.isRope) {
+      onObjectDrag(dragState.current.objectId, 0, newY);
+    } else {
+      const newX = worldX - dragState.current.offsetX;
+      onObjectDrag(dragState.current.objectId, newX, newY);
+    }
   };
 
   const handleMouseUp = () => {

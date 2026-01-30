@@ -151,14 +151,11 @@ export class MeasurementCoil {
   }
 }
 
-export class Magnet {
+export class Dipole {
   constructor(x, y, moment = 0.1, angle = 90, mu = MU_0) {
-    this.type = 'magnet';
-    this.id = Math.random().toString(36).substr(2, 9);
+    this.type = 'dipole';
     this.x = x;
     this.y = y;
-    this.radius = 0.005;
-    this.length = 0.03;
     this.moment = moment;
     this.angle = angle;
     this.mu = mu;
@@ -218,9 +215,251 @@ export class Magnet {
     
     return { Az };
   }
+}
+
+export class Magnet {
+  constructor(x, y, radius = 0.01, length = 0.06, n_x = 10, n_y = 20, moment = 0.1, angle = 90, mu = MU_0) {
+    this.type = 'magnet';
+    this.id = Math.random().toString(36).substr(2, 9);
+    this._x = x;
+    this._y = y;
+    this._radius = radius;
+    this._length = length;
+    this._n_x = n_x;
+    this._n_y = n_y;
+    this._moment = moment;
+    this._angle = angle;
+    this._mu = mu;
+    this._dirty = true;
+    this._dipoles = [];
+  }
+
+  // Getters and setters to track changes and regenerate dipoles
+  get x() { return this._x; }
+  set x(val) { this._x = val; this._dirty = true; }
+  
+  get y() { return this._y; }
+  set y(val) { this._y = val; this._dirty = true; }
+  
+  get radius() { return this._radius; }
+  set radius(val) { this._radius = val; this._dirty = true; }
+  
+  get length() { return this._length; }
+  set length(val) { this._length = val; this._dirty = true; }
+  
+  get n_x() { return this._n_x; }
+  set n_x(val) { this._n_x = val; this._dirty = true; }
+  
+  get n_y() { return this._n_y; }
+  set n_y(val) { this._n_y = val; this._dirty = true; }
+  
+  get moment() { return this._moment; }
+  set moment(val) { this._moment = val; this._dirty = true; }
+  
+  get angle() { return this._angle; }
+  set angle(val) { this._angle = val; this._dirty = true; }
+  
+  get mu() { return this._mu; }
+  set mu(val) { this._mu = val; this._dirty = true; }
+
+  get dipoles() {
+    if (this._dirty) {
+      this._dipoles = this._createDipoles();
+      this._dirty = false;
+    }
+    return this._dipoles;
+  }
+
+  _createDipoles() {
+    const dipoles = [];
+    const numDipoles = this._n_x * this._n_y;
+    const dipoleMoment = this._moment / numDipoles;
+    
+    // Angle in radians for orientation
+    const angleRad = this._angle * Math.PI / 180;
+    
+    // Unit vectors along and perpendicular to magnet axis
+    const axisX = Math.cos(angleRad);
+    const axisY = Math.sin(angleRad);
+    const perpX = -Math.sin(angleRad);
+    const perpY = Math.cos(angleRad);
+    
+    // Distribute dipoles on a rectangular grid
+    // Along the length (axis direction) and across the radius (perpendicular)
+    for (let i = 0; i < this._n_y; i++) {
+      // Position along the length axis (-length/2 to +length/2)
+      const t = this._n_y === 1 ? 0 : (i / (this._n_y - 1) - 0.5) * this._length;
+      
+      for (let j = 0; j < this._n_x; j++) {
+        // Position across the radius (-radius to +radius)
+        const s = this._n_x === 1 ? 0 : (j / (this._n_x - 1) - 0.5) * 2 * this._radius;
+        
+        // Compute dipole position
+        const dipoleX = this._x + t * axisX + s * perpX;
+        const dipoleY = this._y + t * axisY + s * perpY;
+        
+        dipoles.push(new Dipole(dipoleX, dipoleY, dipoleMoment, this._angle, this._mu));
+      }
+    }
+    
+    return dipoles;
+  }
+
+  field(x, y) {
+    let Bx = 0;
+    let By = 0;
+    
+    for (const dipole of this.dipoles) {
+      const { Bx: bx, By: by } = dipole.field(x, y);
+      Bx += bx;
+      By += by;
+    }
+    
+    return { Bx, By };
+  }
+
+  potential(x, y) {
+    let Az = 0;
+    
+    for (const dipole of this.dipoles) {
+      const { Az: az } = dipole.potential(x, y);
+      Az += az;
+    }
+    
+    return { Az };
+  }
 
   clone() {
-    return new Magnet(this.x, this.y, this.moment, this.angle, this.mu);
+    return new Magnet(this._x, this._y, this._radius, this._length, this._n_x, this._n_y, this._moment, this._angle, this._mu);
+  }
+}
+
+export class Rope {
+  constructor(y, length = 0.2, density = 500, dipoleMoment = 1e-6, mu = MU_0) {
+    this.type = 'rope';
+    this.id = Math.random().toString(36).substr(2, 9);
+    this._y = y;
+    this._length = length;
+    this._density = density; // dipoles per meter
+    this._dipoleMoment = dipoleMoment;
+    this._mu = mu;
+    this.dipoles = [];
+    
+    // Create the dipole distribution
+    this._createDipoles();
+  }
+
+  // Getters and setters to update dipoles when properties change
+  get y() { return this._y; }
+  set y(val) { 
+    this._y = val; 
+    this._updateDipolePositions();
+  }
+  
+  get length() { return this._length; }
+  set length(val) { 
+    this._length = val; 
+    this._createDipoles();
+  }
+  
+  get density() { return this._density; }
+  set density(val) { 
+    this._density = val; 
+    this._createDipoles();
+  }
+  
+  get dipoleMoment() { return this._dipoleMoment; }
+  set dipoleMoment(val) { 
+    this._dipoleMoment = val; 
+    this._createDipoles();
+  }
+  
+  get mu() { return this._mu; }
+  set mu(val) { 
+    this._mu = val; 
+    this._createDipoles();
+  }
+
+  _createDipoles() {
+    this.dipoles = [];
+    const numDipoles = Math.max(1, Math.round(this._length * this._density));
+    const spacing = this._length / numDipoles;
+    const startX = -this._length / 2;
+    
+    for (let i = 0; i < numDipoles; i++) {
+      const x = startX + (i + 0.5) * spacing;
+      // Initial angle is 0 (horizontal), will be updated by external field
+      this.dipoles.push(new Dipole(x, this._y, this._dipoleMoment, 0, this._mu));
+    }
+  }
+
+  // Update only Y positions of existing dipoles (preserves angles)
+  _updateDipolePositions() {
+    for (const dipole of this.dipoles) {
+      dipole.y = this._y;
+    }
+  }
+
+  // Update dipole alignments based on external magnetic field
+  // simulation: the MagneticFieldSimulation instance
+  updateAlignment(simulation) {
+    for (const dipole of this.dipoles) {
+      // Compute external field at dipole location (excluding this rope)
+      let Bx = 0;
+      let By = 0;
+      for (const obj of simulation.objects) {
+        if (obj.id === this.id) continue; // Skip self
+        const { Bx: bx, By: by } = obj.field(dipole.x, dipole.y);
+        Bx += bx;
+        By += by;
+      }
+      
+      // Align dipole with external field direction
+      const magnitude = Math.sqrt(Bx * Bx + By * By);
+      if (magnitude > 1e-15) {
+        // Angle in degrees
+        dipole.angle = Math.atan2(By, Bx) * 180 / Math.PI;
+      }
+    }
+  }
+
+  // Rope position is fixed horizontally, so x getter returns center (0)
+  get x() { return 0; }
+  
+  // Prevent horizontal position changes
+  set x(val) { /* fixed position */ }
+
+  field(x, y) {
+    let Bx = 0;
+    let By = 0;
+    
+    for (const dipole of this.dipoles) {
+      const { Bx: bx, By: by } = dipole.field(x, y);
+      Bx += bx;
+      By += by;
+    }
+    
+    return { Bx, By };
+  }
+
+  potential(x, y) {
+    let Az = 0;
+    
+    for (const dipole of this.dipoles) {
+      const { Az: az } = dipole.potential(x, y);
+      Az += az;
+    }
+    
+    return { Az };
+  }
+
+  clone() {
+    const clone = new Rope(this._y, this._length, this._density, this._dipoleMoment, this._mu);
+    // Copy dipole angles
+    for (let i = 0; i < this.dipoles.length; i++) {
+      clone.dipoles[i].angle = this.dipoles[i].angle;
+    }
+    return clone;
   }
 }
 
