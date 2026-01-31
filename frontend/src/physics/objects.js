@@ -6,6 +6,8 @@ import { getBr, getBz, getLoopAphi } from './functions.js';
 
 const MU_0 = 4 * Math.PI * 1e-7;
 
+
+
 export class Coil {
   constructor(x, y, radius=0.03, length=0.05, nTurns=100, current=2.0, mu=MU_0) { 
     this.type = 'coil';
@@ -152,6 +154,20 @@ export class MeasurementCoil {
 }
 
 export class Dipole {
+  /**
+    Simulates an elementary dipole using the magnetic dipole model:
+    B̂ = (μ0/4π) * [3(^m·r̂)r̂ - ^mr²] / r³
+    
+    The magnet is oriented along the y-direction (dipole moment points in +y or -y).
+    Dipole approximation, correct far from the magnet.
+    Position (x, y) represents the center of the magnet.
+   * 
+   * @param {*} x - position of the dipole
+   * @param {*} y - position of the dipole
+   * @param {*} moment - moment of the dipole (A m^-2)
+   * @param {*} angle - angular position of the dipole
+   * @param {*} mu - vaccum magnetic permeability
+   */
   constructor(x, y, moment = 0.1, angle = 90, mu = MU_0) {
     this.type = 'dipole';
     this.x = x;
@@ -218,6 +234,19 @@ export class Dipole {
 }
 
 export class Magnet {
+  /**
+    Magnet is modelised as a surface density of Dipole objects.
+   /**
+    * @param {number} x - Center x position of the magnet (meters)
+    * @param {number} y - Center y position of the magnet (meters)
+    * @param {number} radius - x lenght of the magnet (meters)
+    * @param {number} length - y lenght of the magnet (meters)
+    * @param {number} n_x - Number of dipoles along x direction
+    * @param {number} n_y - Number of dipoles along y direction
+    * @param {number} moment - Total dipole moment of the magnet (A·m²)
+    * @param {number} angle - Orientation of the magnet (degrees, 0 = x axis, 90 = y axis)
+    * @param {number} mu - Magnetic permeability (default: vacuum permeability, H/m)
+    */
   constructor(x, y, radius = 0.01, length = 0.06, n_x = 10, n_y = 20, moment = 0.1, angle = 90, mu = MU_0) {
     this.type = 'magnet';
     this.id = Math.random().toString(36).substr(2, 9);
@@ -335,7 +364,16 @@ export class Magnet {
 }
 
 export class Rope {
-  constructor(y, length = 0.2, density = 500, dipoleMoment = 1e-6, mu = MU_0) {
+  /**
+   * Rope simulated as a linear density of Dipole objects.
+   /**
+    * @param {number} y - y position (meters) where the rope is horizontally centered
+    * @param {number} length - total length of the rope (meters)
+    * @param {number} density - number of dipoles per meter (1/m)
+    * @param {number} dipoleMoment - magnetic dipole moment of each dipole (A·m²)
+    * @param {number} mu - magnetic permeability (default: vacuum permeability, H/m)
+    */
+  constructor(y, length = 0.3, density = 500, dipoleMoment = 1e-6, mu = MU_0) {
     this.type = 'rope';
     this.id = Math.random().toString(36).substr(2, 9);
     this._y = y;
@@ -380,6 +418,12 @@ export class Rope {
     this._createDipoles();
   }
 
+  // Rope position is fixed horizontally, so x getter returns center (0)
+  get x() { return 0; }
+  // Prevent horizontal position changes
+  set x(val) { /* fixed position */ }
+
+  
   _createDipoles() {
     this.dipoles = [];
     const numDipoles = Math.max(1, Math.round(this._length * this._density));
@@ -422,12 +466,6 @@ export class Rope {
       }
     }
   }
-
-  // Rope position is fixed horizontally, so x getter returns center (0)
-  get x() { return 0; }
-  
-  // Prevent horizontal position changes
-  set x(val) { /* fixed position */ }
 
   field(x, y) {
     let Bx = 0;
