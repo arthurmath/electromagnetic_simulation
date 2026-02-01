@@ -121,6 +121,6 @@ Est ce qu'une simulation 2D est suffisante pour modéliser ces phénomènes ?
 
 Le champ magnétique généré par les Magnets augmentent si on augmente la nombre de Dipoles à l'intérieur (n_x et n_y)
 
-Résolu : 
 Actuellement, les Dipoles de l'aiment ne changent pas de direction, alors que ceux de la corde s'alignent sur B, alors que ce sont tous les deux des matériaux ferro.
-D'après GPT, il ne faut pas aligner les moments élémentaires (dipoles) sur le champ extérieur pour les aimants car l'aimantation rémanente est très grande, il faudrait un champ très fort pour les faire tourner. Cependant, il faut aligner les moments de la corde (matériau férromagnétique doux) car c'est une Aimantation induite qui est donc sensible au champ B extérieur. La norme augmente quand B aumgente : norm = m_sat * tanh(|B_local| / B0).
+D'après GPT, il ne faut pas aligner les moments élémentaires (dipoles) sur le champ extérieur pour les aimants car l'aimantation rémanente est très grande (il faudrait un champ très fort pour les faire tourner). Cependant, il faut aligner les moments de la corde (matériau férromagnétique doux) car c'est une aimantation induite qui est donc sensible au champ B extérieur. La norme augmente jusqu'à saturation quand B aumgente : norm = m_sat * tanh(|B_local| / B0).
+Quel est le temps nécessaire pour faire saturer les dm ? En régime dynamique, est ce que les dm ont le temps de faire -B -> +B ?
