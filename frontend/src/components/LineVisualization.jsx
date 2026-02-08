@@ -117,29 +117,31 @@ const LineVisualization = ({ simulation, version, xRange, yRange, resolution, de
         ctx.fillText(currentText, cx, cy);
 
       } else if (obj.type === 'rope') {
-        // Draw rope as a horizontal line
         const ropeY = toCanvasY(obj.y);
-        const ropeLength = (obj.length / (xRange[1] - xRange[0])) * width;
         const ropeStartX = toCanvasX(-obj.length / 2);
-        
+        const ropeEndX = toCanvasX(obj.length / 2);
+
+        // Draw clamped-end squares
+        const sqSize = 10;
+        ctx.fillStyle = '#555';
+        ctx.fillRect(ropeStartX - sqSize / 2, ropeY - sqSize / 2, sqSize, sqSize);
+        ctx.fillRect(ropeEndX - sqSize / 2, ropeY - sqSize / 2, sqSize, sqSize);
+
+        // Draw rope as curve through displaced dipole positions
         ctx.strokeStyle = '#8B4513';
         ctx.lineWidth = 3;
         ctx.setLineDash([]);
         ctx.beginPath();
         ctx.moveTo(ropeStartX, ropeY);
-        ctx.lineTo(ropeStartX + ropeLength, ropeY);
-        ctx.stroke();
-        
-        // Draw small marks at dipole positions
+
         if (obj.dipoles) {
-          ctx.fillStyle = '#8B4513';
           for (const dipole of obj.dipoles) {
-            const dx = toCanvasX(dipole.x);
-            ctx.beginPath();
-            ctx.arc(dx, ropeY, 2, 0, 2 * Math.PI);
-            ctx.fill();
+            ctx.lineTo(toCanvasX(dipole.x), toCanvasY(dipole.y));
           }
         }
+
+        ctx.lineTo(ropeEndX, ropeY);
+        ctx.stroke();
       }
     });
 

@@ -476,6 +476,44 @@ const ControlPanel = ({
                     style={styles.input}
                   />
                 </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Tension (N)</label>
+                  <input
+                    type="number"
+                    step="1"
+                    value={selectedObject.tension ?? 70}
+                    onChange={(e) => handlePropertyChange('tension', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Linear Mass Density (g/m)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={((selectedObject.lineMassDensity ?? 0.0035) * 1000).toFixed(1)}
+                    onChange={(e) => {
+                      const gPerM = parseFloat(e.target.value);
+                      if (!isNaN(gPerM) && gPerM > 0) {
+                        const kgPerM = gPerM / 1000;
+                        simulation.updateObject(selectedObject.id, { lineMassDensity: kgPerM });
+                        setSelectedObject({ ...selectedObject, lineMassDensity: kgPerM });
+                        onUpdate();
+                      }
+                    }}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.property}>
+                  <label style={styles.label}>Damping</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={selectedObject.damping ?? 0.5}
+                    onChange={(e) => handlePropertyChange('damping', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
               </>
             )}
           </div>

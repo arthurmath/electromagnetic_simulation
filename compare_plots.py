@@ -33,6 +33,9 @@ params = data['params']
 fig, axes = plt.subplots(2, 4, figsize=(20, 10))
 fig.suptitle(f'Magnetic Field Comparison: Coil vs Magnet', fontsize=16, fontweight='bold')
 
+# Overlap on the two plots (yes: i=0)
+i = 0
+
 # Add parameter text box
 coil_text = f"""Coil Parameters:
 R = {params['coil']['radius']*1000:.1f} mm
@@ -97,45 +100,45 @@ axes[0, 3].axvline(x=0, color='k', linestyle='--', linewidth=0.5)
 
 # Magnet plots (bottom row)
 # B_x vs x
-axes[1, 0].plot(xValues * 1000, magnet_Bx_vs_x * 1000, 'r-', linewidth=2, label='Magnet')
-axes[1, 0].set_xlabel('x [mm]')
-axes[1, 0].set_ylabel('$B_x$ [mT]')
-axes[1, 0].set_title('Magnet: $B_x$ vs x (at y=0)')
-axes[1, 0].grid(True, alpha=0.3)
-axes[1, 0].axhline(y=0, color='k', linestyle='--', linewidth=0.5)
-axes[1, 0].axvline(x=0, color='k', linestyle='--', linewidth=0.5)
+axes[i, 0].plot(xValues * 1000, magnet_Bx_vs_x * 1000, 'r-', linewidth=2, label='Magnet')
+axes[i, 0].set_xlabel('x [mm]')
+axes[i, 0].set_ylabel('$B_x$ [mT]')
+axes[i, 0].set_title('Magnet: $B_x$ vs x (at y=0)')
+axes[i, 0].grid(True, alpha=0.3)
+axes[i, 0].axhline(y=0, color='k', linestyle='--', linewidth=0.5)
+axes[i, 0].axvline(x=0, color='k', linestyle='--', linewidth=0.5)
 
 # B_y vs x
-axes[1, 1].plot(xValues * 1000, magnet_By_vs_x * 1000, 'r-', linewidth=2, label='Magnet')
-axes[1, 1].set_ylim(-1.2, 4)
-axes[1, 1].set_xlabel('x [mm]')
-axes[1, 1].set_ylabel('$B_y$ [mT]')
-axes[1, 1].set_title('Magnet: $B_y$ vs x (at y=0)')
-axes[1, 1].grid(True, alpha=0.3)
-axes[1, 1].axhline(y=0, color='k', linestyle='--', linewidth=0.5)
-axes[1, 1].axvline(x=0, color='k', linestyle='--', linewidth=0.5)
+axes[i, 1].plot(xValues * 1000, magnet_By_vs_x * 1000, 'r-', linewidth=2, label='Magnet')
+axes[i, 1].set_ylim(-1.2, 4)
+axes[i, 1].set_xlabel('x [mm]')
+axes[i, 1].set_ylabel('$B_y$ [mT]')
+axes[i, 1].set_title('Magnet: $B_y$ vs x (at y=0)')
+axes[i, 1].grid(True, alpha=0.3)
+axes[i, 1].axhline(y=0, color='k', linestyle='--', linewidth=0.5)
+axes[i, 1].axvline(x=0, color='k', linestyle='--', linewidth=0.5)
 
 # B_x vs y
-axes[1, 2].plot(yValues * 1000, magnet_Bx_vs_y * 1000, 'r-', linewidth=2, label='Magnet')
-axes[1, 2].set_xlabel('y [mm]')
-axes[1, 2].set_ylabel('$B_x$ [mT]')
-axes[1, 2].set_title('Magnet: $B_x$ vs y (at x=0)')
-axes[1, 2].grid(True, alpha=0.3)
-axes[1, 2].axhline(y=0, color='k', linestyle='--', linewidth=0.5)
-axes[1, 2].axvline(x=0, color='k', linestyle='--', linewidth=0.5)
+axes[i, 2].plot(yValues * 1000, magnet_Bx_vs_y * 1000, 'r-', linewidth=2, label='Magnet')
+axes[i, 2].set_xlabel('y [mm]')
+axes[i, 2].set_ylabel('$B_x$ [mT]')
+axes[i, 2].set_title('Magnet: $B_x$ vs y (at x=0)')
+axes[i, 2].grid(True, alpha=0.3)
+axes[i, 2].axhline(y=0, color='k', linestyle='--', linewidth=0.5)
+axes[i, 2].axvline(x=0, color='k', linestyle='--', linewidth=0.5)
 
 # B_y vs y
-axes[1, 3].plot(yValues * 1000, magnet_By_vs_y * 1000, 'r-', linewidth=2, label='Magnet')
-axes[1, 3].set_xlabel('y [mm]')
-axes[1, 3].set_ylabel('$B_y$ [mT]')
-axes[1, 3].set_title('Magnet: $B_y$ vs y (at x=0)')
-axes[1, 3].grid(True, alpha=0.3)
-axes[1, 3].axhline(y=0, color='k', linestyle='--', linewidth=0.5)
-axes[1, 3].axvline(x=0, color='k', linestyle='--', linewidth=0.5)
+axes[i, 3].plot(yValues * 1000, magnet_By_vs_y * 1000, 'r-', linewidth=2, label='Magnet')
+axes[i, 3].set_xlabel('y [mm]')
+axes[i, 3].set_ylabel('$B_y$ [mT]')
+axes[i, 3].set_title('Magnet: $B_y$ vs y (at x=0)')
+axes[i, 3].grid(True, alpha=0.3)
+axes[i, 3].axhline(y=0, color='k', linestyle='--', linewidth=0.5)
+axes[i, 3].axvline(x=0, color='k', linestyle='--', linewidth=0.5)
 
 
 plt.tight_layout(rect=[0, 0.03, 1, 0.96])
-plt.savefig('images/field_comparison.png', dpi=150, bbox_inches='tight')
+plt.savefig('images/field_comparison_over.png', dpi=150, bbox_inches='tight')
 print('Plot saved as field_comparison.png')
 plt.show()
 

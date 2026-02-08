@@ -365,15 +365,22 @@ export class Magnet {
 
 export class Rope {
   /**
-   * Rope simulated as a linear density of Dipole objects.
-   /**
-    * @param {number} y - y position (meters) where the rope is horizontally centered
-    * @param {number} length - total length of the rope (meters)
-    * @param {number} density - number of dipoles per meter (1/m)
-    * @param {number} dipoleMoment - magnetic dipole moment of each dipole (A·m²)
-    * @param {number} mu - magnetic permeability (default: vacuum permeability, H/m)
-    */
-  constructor(y, length = 0.3, density = 500, dipoleMoment = 1e-6, mu = MU_0) {
+   * Rope simulated as a linear density of Dipole objects with mechanical dynamics.
+   * Solves the 1D wave equation: ρ ∂²u/∂t² = T ∂²u/∂x² - γ ∂u/∂t + f(x,t)
+   * with clamped-clamped boundary conditions: u(0,t) = u(L,t) = 0
+   * Magnetic force: f(x,t) = density * ∂(m·B)/∂y
+   *
+   * @param {number} y - y position (meters) where the rope is horizontally centered
+   * @param {number} length - total length of the rope (meters)
+   * @param {number} density - number of dipoles per meter (1/m)
+   * @param {number} dipoleMoment - magnetic dipole moment of each dipole (A·m²)
+   * @param {number} mu - magnetic permeability (default: vacuum permeability, H/m)
+   * @param {number} tension - rope tension (N)
+   * @param {number} lineMassDensity - mass per unit length (kg/m)
+   * @param {number} damping - damping coefficient (kg/(m·s))
+   */
+  constructor(y, length = 0.3, density = 500, dipoleMoment = 1e-6, mu = MU_0,
+              tension = 70, lineMassDensity = 3.5e-3, damping = 0.5) {
     this.type = 'rope';
     this.id = Math.random().toString(36).substr(2, 9);
     this._y = y;
@@ -381,9 +388,13 @@ export class Rope {
     this._density = density; // dipoles per meter
     this._dipoleMoment = dipoleMoment;
     this._mu = mu;
+    this._tension = tension;
+    this._lineMassDensity = lineMassDensity;
+    this._damping = damping;
     this.dipoles = [];
+    this.displacement = null;
+    this.velocity = null;
     
-    // Create the dipole distribution
     this._createDipoles();
   }
 
@@ -418,12 +429,20 @@ export class Rope {
     this._createDipoles();
   }
 
+  get tension() { return this._tension; }
+  set tension(val) { this._tension = val; }
+
+  get lineMassDensity() { return this._lineMassDensity; }
+  set lineMassDensity(val) { this._lineMassDensity = val; }
+
+  get damping() { return this._damping; }
+  set damping(val) { this._damping = val; }
+
   // Rope position is fixed horizontally, so x getter returns center (0)
   get x() { return 0; }
   // Prevent horizontal position changes
   set x(val) { /* fixed position */ }
 
-  
   _createDipoles() {
     this.dipoles = [];
     const numDipoles = Math.max(1, Math.round(this._length * this._density));
@@ -432,39 +451,139 @@ export class Rope {
     
     for (let i = 0; i < numDipoles; i++) {
       const x = startX + (i + 0.5) * spacing;
-      // Initial angle is 0 (horizontal), will be updated by external field
       this.dipoles.push(new Dipole(x, this._y, this._dipoleMoment, 0, this._mu));
     }
+
+    // Initialize mechanical state
+    this.displacement = new Float64Array(numDipoles);
+    this.velocity = new Float64Array(numDipoles);
   }
 
-  // Update only Y positions of existing dipoles (preserves angles)
+  // Update Y positions of existing dipoles (respects displacement)
   _updateDipolePositions() {
-    for (const dipole of this.dipoles) {
-      dipole.y = this._y;
+    for (let i = 0; i < this.dipoles.length; i++) {
+      this.dipoles[i].y = this._y + (this.displacement ? this.displacement[i] : 0);
     }
   }
 
   // Update dipole alignments based on external magnetic field
-  // simulation: the MagneticFieldSimulation instance
   updateAlignment(simulation) {
     for (const dipole of this.dipoles) {
-      // Compute external field at dipole location (excluding this rope)
       let Bx = 0;
       let By = 0;
       for (const obj of simulation.objects) {
-        if (obj.id === this.id) continue; // Skip self
+        if (obj.id === this.id) continue;
         const { Bx: bx, By: by } = obj.field(dipole.x, dipole.y);
         Bx += bx;
         By += by;
       }
       
-      // Align dipole with external field direction
       const magnitude = Math.sqrt(Bx * Bx + By * By);
       if (magnitude > 1e-15) {
-        // Angle in degrees
         dipole.angle = Math.atan2(By, Bx) * 180 / Math.PI;
       }
     }
+  }
+
+  /**
+   * Step the mechanical simulation of the rope.
+   * Solves: ρ ∂²u/∂t² = T ∂²u/∂x² - γ ∂u/∂t + f(x,t)
+   * where f(x,t) = ∂(m·B)/∂y per unit length (magnetic force)
+   */
+  stepMechanics(simulation, dt) {
+    const n = this.dipoles.length;
+    if (n < 3 || dt <= 0) return;
+
+    // Ensure mechanical arrays exist
+    if (!this.displacement || this.displacement.length !== n) {
+      this.displacement = new Float64Array(n);
+      this.velocity = new Float64Array(n);
+    }
+
+    // Cap physics dt to prevent instability when frames are slow
+    dt = Math.min(dt, 0.02);
+
+    const dx = this._length / n;
+    const c2 = this._tension / this._lineMassDensity; // wave speed squared
+
+    // CFL stability condition: subDt must be < dx / c for stability
+    const dtMax = 0.5 * dx / Math.sqrt(c2);
+    const nSubsteps = Math.max(1, Math.ceil(dt / dtMax));
+    const subDt = dt / nSubsteps;
+
+    // Compute magnetic force per unit length at each interior point (once per frame)
+    const force = new Float64Array(n);
+    const delta = 1e-5; // for numerical gradient of B
+
+    for (let i = 1; i < n - 1; i++) {
+      const dipole = this.dipoles[i];
+      const xPos = dipole.x;
+      const yPos = this._y + this.displacement[i];
+
+      const angleRad = dipole.angle * Math.PI / 180;
+      const mx = dipole.moment * Math.cos(angleRad);
+      const my = dipole.moment * Math.sin(angleRad);
+
+      let mDotB_plus = 0;
+      let mDotB_minus = 0;
+
+      for (const obj of simulation.objects) {
+        if (obj.id === this.id) continue;
+
+        const { Bx: bxP, By: byP } = obj.field(xPos, yPos + delta);
+        const { Bx: bxM, By: byM } = obj.field(xPos, yPos - delta);
+
+        mDotB_plus += mx * bxP + my * byP;
+        mDotB_minus += mx * bxM + my * byM;
+      }
+
+      // Fy per dipole = d(m·B)/dy, force per unit length = Fy * dipoles_per_meter
+      const Fy = (mDotB_plus - mDotB_minus) / (2 * delta);
+      force[i] = Fy * this._density;
+    }
+
+    // Time-step the wave equation using double-buffered explicit scheme
+    // (Jacobi update — reads only from the previous step, avoiding Gauss-Seidel drift)
+    const invRho = 1.0 / this._lineMassDensity;
+
+    let currDisp = this.displacement;
+    let currVel = this.velocity;
+    let nextDisp = new Float64Array(n); // boundaries stay 0
+    let nextVel = new Float64Array(n);
+
+    for (let step = 0; step < nSubsteps; step++) {
+      for (let i = 1; i < n - 1; i++) {
+        const d2u = (currDisp[i + 1] - 2 * currDisp[i] + currDisp[i - 1]) / (dx * dx);
+        const accel = c2 * d2u - this._damping * invRho * currVel[i] + force[i] * invRho;
+
+        nextVel[i] = currVel[i] + accel * subDt;
+        nextDisp[i] = currDisp[i] + nextVel[i] * subDt;
+      }
+      // Swap buffers (boundary values remain 0 from initialization)
+      const tmpD = currDisp; currDisp = nextDisp; nextDisp = tmpD;
+      const tmpV = currVel;  currVel = nextVel;  nextVel = tmpV;
+    }
+
+    this.displacement = currDisp;
+    this.velocity = currVel;
+
+    // // Safety: if NaN crept in, reset everything
+    // if (isNaN(currDisp[Math.floor(n / 2)])) {
+    //   this.displacement = new Float64Array(n);
+    //   this.velocity = new Float64Array(n);
+    // }
+
+    // Update dipole y positions to reflect displacement
+    for (let i = 0; i < n; i++) {
+      this.dipoles[i].y = this._y + this.displacement[i];
+    }
+  }
+
+  resetMechanics() {
+    const n = this.dipoles.length;
+    this.displacement = new Float64Array(n);
+    this.velocity = new Float64Array(n);
+    this._updateDipolePositions();
   }
 
   field(x, y) {
@@ -492,10 +611,14 @@ export class Rope {
   }
 
   clone() {
-    const clone = new Rope(this._y, this._length, this._density, this._dipoleMoment, this._mu);
-    // Copy dipole angles
+    const clone = new Rope(this._y, this._length, this._density, this._dipoleMoment, this._mu,
+                            this._tension, this._lineMassDensity, this._damping);
     for (let i = 0; i < this.dipoles.length; i++) {
       clone.dipoles[i].angle = this.dipoles[i].angle;
+    }
+    if (this.displacement) {
+      clone.displacement = new Float64Array(this.displacement);
+      clone.velocity = new Float64Array(this.velocity);
     }
     return clone;
   }

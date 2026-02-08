@@ -123,5 +123,14 @@ export class MagneticFieldSimulation {
       }
     }
   }
+
+  // Step rope mechanical simulation
+  stepRopeMechanics(dt) {
+    for (const obj of this.objects) {
+      if (obj.type === 'rope') {
+        obj.stepMechanics(this, dt);
+      }
+    }
+  }
 }
 

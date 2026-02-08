@@ -36,11 +36,12 @@ function App() {
   const xRange = [-0.20, 0.20];
   const yRange = [-0.15, 0.35];
 
-  // Runs only if the list dependencies change (line 85)
+  // Runs only if the list dependencies change (line 109)
   useEffect(() => {
     if (simMode === 'dynamic') {
       lastTimeRef.current = Date.now();
       
+      // Main loop
       const animate = () => {
         const now = Date.now();
         const dt = (now - lastTimeRef.current) / 1000;
@@ -50,18 +51,25 @@ function App() {
         phaseRef.current += 2 * Math.PI * frequency * dt * timeSpeed;
         
         let hasCoils = false;
+        let hasRopes = false;
         simulation.objects.forEach(obj => {
           if (obj.type === 'coil') {
             hasCoils = true;
             if (obj.baseCurrent === undefined) obj.baseCurrent = obj.current;
             obj.current = obj.baseCurrent * Math.cos(phaseRef.current);
           }
+          if (obj.type === 'rope') {
+            hasRopes = true;
+          }
         });
+
+        // Step rope mechanical simulation
+        simulation.stepRopeMechanics(dt * timeSpeed);
 
         // Update measurement coils with the actual time step (accounting for time speed)
         simulation.updateMeasurementCoils(dt * timeSpeed);
 
-        if (hasCoils) {
+        if (hasCoils || hasRopes) {
           // Modifie UpdateCounter -> déclenche le UseEffect de ArrowVisualization -> redessine le champ
           handleUpdate();
         }
@@ -70,6 +78,7 @@ function App() {
       };
       // Lance le 1er appel de animate
       animationRef.current = requestAnimationFrame(animate);
+      
     } else {
       if (animationRef.current) {
         // Arrete la boucle
@@ -84,6 +93,10 @@ function App() {
         if (obj.type === 'measurementCoil') {
           obj.inducedCurrent = 0;
           obj.previousFlux = null;
+        }
+        // Reset rope mechanics
+        if (obj.type === 'rope') {
+          obj.resetMechanics();
         }
       });
       handleUpdate();

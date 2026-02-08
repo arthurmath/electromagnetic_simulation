@@ -53,8 +53,8 @@ export function getBz(a, mu, n, current, r, ksi_low, ksi_high) {
   
   const product_high = (a - r) * ksi_high;
   const product_low = (a - r) * ksi_low;
-  const sign_high = product_high / Math.abs(product_high);
-  const sign_low = product_low / Math.abs(product_low);
+  const sign_high = product_high === 0 ? 0 : product_high / Math.abs(product_high);
+  const sign_low = product_low === 0 ? 0 : product_low / Math.abs(product_low);
   
   const Bz_high = (mu * n * current / 4) * (((ksi_high * k_high) / (Math.PI * sqrt_ar) * K_high) + (sign_high * heuman_lambda(phi_high, k_high)));
   const Bz_low = (mu * n * current / 4) * (((ksi_low * k_low) / (Math.PI * sqrt_ar) * K_low) + (sign_low * heuman_lambda(phi_low, k_low)));
