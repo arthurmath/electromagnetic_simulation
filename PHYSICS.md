@@ -21,8 +21,6 @@ $$
 \mathbf{B}(r,z) = B_r(r,z)\,\mathbf{e}_r + B_z(r,z)\,\mathbf{e}_z
 $$
 
-Passage aux coordonnées cartésiennes
-
 En posant $r = |x-x_0|$ et $z = y-y_0$, les composantes cartésiennes du champ sont :
 $$
 B_x = -B_r \, \mathrm{sign}(x-x_0)
@@ -201,12 +199,7 @@ $$
 $$
 
 
-La perméabilité magnétique du vide est donnée par :
-$$
-\mu_0 = 4\pi \times 10^{-7}\ \mathrm{H\cdot m^{-1}}
-$$
-
-Composantes cartésiennes :
+La perméabilité magnétique du vide étant : $\mu_0 = 4\pi \times 10^{-7}\ \mathrm{H\cdot m^{-1}}$. En projettant sur les composantes cartésiennes, on obtient :
 $$
 B_x =
 \frac{\mu_0}{4\pi r^5}
@@ -250,20 +243,23 @@ avec :
 
 La force par unité de longeur d'un champ magnétique extérieur sur des moments magnétiques $\mathbf{m}$ est : 
 $$
-\mathbf{f} = grad(\mathbf{m} \cdot \mathbf{B}) 
+\mathbf{f} = grad(\mathbf{m} \cdot \mathbf{B}) = \begin{pmatrix}
+\frac{\partial (m_x B_x + m_y B_y)}{\partial x} \\
+\frac{\partial (m_x B_x + m_y B_y)}{\partial y}  \\
+\end{pmatrix}
 $$
 
 ## Types de magnétisme :
 
 ### Diamagnétisme :
 
-Propriété universelle : tout matériau est au moins diamagnétique. Des propriétés paramagnétiques ou ferromagnétiques supplémentaires peuvent se superposer. Si l'on plonge un matériau dans un champ magnétique extérieur, les mouvements des électrons, formant donc des courants, sont induits sous l'influence de ce champ magnétique. Selon la règle de Lenz, ces courants sont dirigés de telle sorte qu'ils s'opposent à la cause qui les a créé. Les nuages électroniques vont donc créer des moments contraires à la direction du champ, et le matériau crée un faible champ opposé au champ externe. 
+Propriété universelle : tout matériau est au moins diamagnétique. Des propriétés paramagnétiques ou ferromagnétiques supplémentaires peuvent se superposer. Si l'on plonge un matériau dans un champ magnétique extérieur, le mouvement orbital des électrons, formant donc des courants, sont induits sous l'influence de ce champ magnétique. Selon la règle de Lenz, ces courants sont dirigés de telle sorte qu'ils s'opposent à la cause qui les a créé. Les nuages électroniques vont donc créer des moments contraires à la direction du champ, et le matériau crée alors un faible champ opposé au champ externe. 
 
 Caractéristiques :
 - Toujours faiblement répulsif
 - Aimantation induite très faible
 - Disparaît quand le champ est coupé
-- Susceptibilité magnétique négative : χ < 0
+- Susceptibilité magnétique négative : $χ < 0$
 
 
 ### Paramagnétisme
@@ -274,19 +270,19 @@ Caractéristiques :
 - Faiblement attractif
 - Aimantation proportionnelle au champ
 - Disparaît quand le champ est coupé
-- Susceptibilité magnétique positive faible : χ << 1
+- Susceptibilité magnétique positive faible : $χ \ll 1$
 
 
 ### Ferromagnétisme
 
 Le ferromagnétisme désigne la capacité de certains corps à s'aimanter sous l'effet d'un champ magnétique extérieur et à garder une partie de cette aimantation. Forte interaction collective entre moments magnétiques. Formation de domaines magnétiques. Alignement spontané, même sans champ externe.
-À température ambiante, seuls les éléments fer, nickel et cobalt sont ferromagnétiques. 
+À température ambiante, seuls les éléments fer, nickel et cobalt (et leurs alliages (acier FeC ou ferrite Fe₃O₄)) sont ferromagnétiques. 
 
 Caractéristiques :
 - Fortement attractif
 - Peut rester aimanté après coupure du champ (aimant permanent)
 - Forte non-linéarité, hystérésis
-- Susceptibilité magnétique positive élevée : χ >> 1
+- Susceptibilité magnétique positive élevée : $χ \gg 1$
 
 L'aimantation de matériaux ferromagnétiques est partiellement conservée lorsque le champ magnétique extérieur est désactivé. Cette aimantation résiduelle est appelée rémanence. Un aimant permanent est toujours un matériau ferromagnétique, mais tous les matériaux ferromagnétiques ne sont pas des aimants permanents. Un aimant permanent est un matériau ferromagnétique avec une forte coercivité Hc (un cycle d'hystérésis large). Cette valeur Hc correspond à l'intensité du champ extérieur nécessaire pour désaimanter le matériau. Si elle est grande, l'aimantation peut être considérée comme permanente. 
 
@@ -316,7 +312,7 @@ $$
 
 avec : $μ = μ_0(1+χ)$. La susceptibilité magnétique $χ$ mesure donc à quel point le matériau modifie le champ magnétique.
 
-Cette formule n'est plus valable pour un matériau ferromagnétique, où il y a des non linéarités (hystérésis, saturation). Nous n'avons plus $M=M(H)$, mais plutôt $M=M(H, histoire)$, selon son cycle d'hystérésis. Quand le champ extérieur est très grand ($H >> 0$), on a saturation de son aimantation : $M = M_s$. À l'inverse, quand le champ extérieur est nul ($H=0$), on a une aimantation rémanente : $M = M_r$. On a alors : 
+Cette formule n'est plus valable pour un matériau ferromagnétique, où il y a des non linéarités (hystérésis, saturation). Nous n'avons plus $M=M(H)$, mais plutôt $M=M(H, histoire)$, selon son cycle d'hystérésis. Quand le champ extérieur est très grand ($H \gg 0$), on a saturation de son aimantation : $M = M_s$. À l'inverse, quand le champ extérieur est nul ($H=0$), on a une aimantation rémanente : $M = M_r$. On a alors : 
 $$
 B = μ_0(H+M_{s/r})
 $$
@@ -339,11 +335,11 @@ où :
 
 Dans de nombreux matériaux, les électrons forment des orbitales électroniques en s'accociant par paires spin up et spin down. Leurs moments magnétiques s'annulent donc (par somme vectorielle). Ces matériaux sont alors diamagnétiques.
 
-Si un atome possède un nombre impair d'électrons, les spins des électrons ne peuvent pas s'annuler par paires. Chaque atome possède alors un spin total résultant du dernier électron "non apparié" restant. Ces matériaux sont paramagnétiques ou ferromagnétiques. Les moments magnétiques atomiques des spins résultants sont par défaut répartis aléatoirement dans toutes les directions de l'espace en raison du mouvement des atomes, de sorte que les champs magnétiques de tous les moments élémentaires réunis se compensent mutuellement et que le matériau apparaisse non magnétique de l'extérieur. Les spins totaux résultants de tous les atomes s'alignent cependant dans un champ magnétique extérieur. Dans ce cas, l'échantillon lui-même se comporte comme un aimant et il est attiré par le champ magnétique extérieur. 
+Si un atome possède un nombre impair d'électrons, les spins des électrons ne peuvent pas s'annuler par paires. Chaque atome possède alors un spin total résultant du dernier électron "non apparié" restant. Ces matériaux sont paramagnétiques ou ferromagnétiques. Les moments magnétiques atomiques des spins résultants sont par défaut répartis aléatoirement dans toutes les directions de l'espace en raison du mouvement des atomes, de sorte que les champs magnétiques de tous les moments élémentaires réunis se compensent mutuellement et que le matériau apparaisse non magnétique de l'extérieur. Cependant, dans un champ magnétique extérieur, les spins totaux résultants de tous les atomes s'alignent sur le champ (cf. modèle d'Ising). Dans ce cas, l'échantillon lui-même se comporte comme un aimant et est attiré par le champ magnétique extérieur. 
 
 ### Température 
 
-À très haute température, tous les matériaux ferromagnétiques deviennent parmagnétiques, car l'énergie thermique des électrons est alors supérieure à l'interaction d'échange et l'alignement parallèle des spins des électrons est détruit. Il existe une température caractéristique propre à chaque matérieu pour cette transition : la température de Curie. Elle vaut 769 °C pour le fer, 1127 °C pour le cobalt et 358 °C pour le nickel.
+À très haute température, tous les matériaux ferromagnétiques deviennent parmagnétiques, car l'énergie thermique des électrons est alors supérieure à l'interaction d'échange et l'alignement parallèle des spins des électrons est détruit. Il existe une température caractéristique propre à chaque matériau pour cette transition : la température de Curie. Elle vaut 769 °C pour le fer, 1127 °C pour le cobalt et 358 °C pour le nickel.
 
 ### Vie quotidienne
 
@@ -372,4 +368,4 @@ Les effets de saturation magnétique et de matériaux ferromagnétiques ne sont 
 Actuellement, les Dipoles de l'aimant ne changent pas de direction, alors que ceux de la corde s'alignent sur B, alors que ce sont tous les deux des matériaux ferro.
 D'après GPT, il ne faut pas aligner les moments élémentaires (dipoles) sur le champ extérieur pour les aimants car l'aimantation rémanente est très grande (il faudrait un champ très fort pour les faire tourner). Cependant, il faut aligner les moments de la corde (matériau férromagnétique doux) car c'est une aimantation induite qui est donc sensible au champ B extérieur. La norme augmente jusqu'à saturation quand B aumgente : norm = m_sat * tanh(|B_local| / B0).
 Quel est le temps nécessaire pour faire saturer les dm ? En régime dynamique, est ce que les dm ont le temps de faire -B -> +B ?
-Est ce que la corde ne serait pas paramagnétique ? 
+Est ce que la corde ne serait pas paramagnétique ? Comment faire pour déterminer cet aspect expérimentalement ?
