@@ -53,9 +53,11 @@ On considère un solénoïde fini de rayon $a$, de longueur $L$, comportant $N$ 
 n = \frac{N}{L}$. Le point d’observation est décrit en coordonnées cylindriques *$(r,z)$*.
 
 On définit :
+
 $$
 \xi = z - z_0
 $$
+
 où *$z_0$* désigne la position axiale d’une spire élémentaire.
 
 
@@ -69,9 +71,11 @@ $$
 $$
 
 En posant $r = |x-x_0|$ et $z = y-y_0$, les composantes cartésiennes du champ sont :
+
 $$
 B_x = -B_r \, \mathrm{sign}(x-x_0)
 $$
+
 $$
 B_y = B_z
 $$
@@ -80,6 +84,7 @@ $$
 #### Champ magnétique radial $B_r$
 
 Par symétrie, sur l’axe du solénoïde (*$r = 0$*), on a :
+
 $$
 B_r = 0
 $$
@@ -128,14 +133,14 @@ B_z^{(\xi)} =
 \left[
 \frac{\xi\, k}{\pi\sqrt{ar}}\,K(k^2)
 +
-\operatorname{sgn}\!\big((a-r)\xi\big)\,
+\mathrm{sign}\!\big((a-r)\xi\big)\,
 \Lambda(\phi,k)
 \right]
 $$
 
 où :
 - *$\Lambda(\phi,k)$* est la fonction lambda de Heuman,
-- *$\operatorname{sgn}$* est la fonction signe,
+- *$\mathrm{sign}$* est la fonction signe,
 - $\phi = \arctan\!\left(\left|\frac{\xi}{a-r}\right|\right)$ l’angle auxiliaire.
 
 
@@ -144,11 +149,13 @@ où :
 ### Potentiel vecteur
 
 Le potentiel vecteur est supposé dirigé selon $z$ :
+
 $$
 \mathbf{A} = A_z(x,y)\,\mathbf{e}_z
 $$
 
 Le solénoïde est discrétisé en $N$ boucles élémentaires :
+
 $$
 A_z(r,z) =
 -\mathrm{sign}(x-x_0) \sum_{i=1}^{N}
@@ -156,6 +163,7 @@ A_\phi^{\text{boucle}}\!\left(r, z-z_i\right)
 $$
 
 avec la position de la $i$-ème boucle :
+
 $$
 z_i = -\frac{L}{2} + \left(i-\frac12\right)\frac{L}{N}
 $$
@@ -184,11 +192,13 @@ La bobine de mesure ne génère pas de champ magnétique. Elle est utilisée uni
 ### Flux magnétique
 
 Le flux magnétique total à travers la bobine est :
+
 $$
 \Phi = N \int_S \mathbf{B}\cdot d\mathbf{S}
 $$
 
 Une approximation uniforme est utilisée :
+
 $$
 \Phi \simeq N\, B_y(x_0,y_0)\, \pi R^2
 $$
@@ -196,6 +206,7 @@ $$
 ### Loi de Faraday
 
 La force électromotrice induite est donnée par :
+
 $$
 \mathcal{E} = -\frac{d\Phi}{dt}
 $$
@@ -203,6 +214,7 @@ $$
 ### Courant induit
 
 En appliquant la loi d’Ohm :
+
 $$
 I_{\text{ind}} = \frac{\mathcal{E}}{R}
 = -\frac{1}{R}\frac{d\Phi}{dt}
@@ -227,6 +239,7 @@ $$
 ### Champ magnétique du dipôle
 
 Pour un point d’observation :
+
 $$
 \mathbf{r} =
 \begin{pmatrix}
@@ -238,6 +251,7 @@ y-y_0 \\
 $$
 
 le champ magnétique est :
+
 $$
 \mathbf{B}(\mathbf{r}) =
 \frac{\mu_0}{4\pi r^5}
@@ -247,6 +261,7 @@ $$
 
 
 La perméabilité magnétique du vide étant : $\mu_0 = 4\pi \times 10^{-7}\ \mathrm{H\cdot m^{-1}}$. En projettant sur les composantes cartésiennes, on obtient :
+
 $$
 B_x =
 \frac{\mu_0}{4\pi r^5}
@@ -262,6 +277,7 @@ $$
 ### Potentiel vecteur du dipôle
 
 Le potentiel vecteur est donné par :
+
 $$
 \mathbf{A}(\mathbf{r}) =
 \frac{\mu_0}{4\pi}
@@ -269,6 +285,7 @@ $$
 $$
 
 Dans le plan $z=0$, seule la composante $A_z$ est non nulle :
+
 $$
 A_z =
 \frac{\mu_0}{4\pi}
@@ -278,10 +295,12 @@ $$
 
 ## Corde 
 
-La corde encastrée - encastrée est modélisée mécaniquement à partir de cette équation à 1 dimension 
+La corde encastrée - encastrée est modélisée mécaniquement à partir de cette équation à 1 dimension :
+
 $$
 \rho\, \frac{\partial^2 u}{\partial t^2} = T\, \frac{\partial^2 u}{\partial x^2} - \gamma\, \frac{\partial u}{\partial t} + f(x, t)
 $$
+
 avec :  
 - $\rho$ : la densité linéique de masse (kg/m)  
 - $T$ : la tension exercée sur la corde (N)  
@@ -289,6 +308,7 @@ avec :
 
 
 La force par unité de longeur d'un champ magnétique extérieur sur des moments magnétiques $\mathbf{m}$ est : 
+
 $$
 \mathbf{f} = grad(\mathbf{m} \cdot \mathbf{B}) = \begin{pmatrix}
 \frac{\partial (m_x B_x + m_y B_y)}{\partial x} \\
@@ -337,22 +357,27 @@ L'aimantation de matériaux ferromagnétiques est partiellement conservée lorsq
 ### Relations :
 
 Pour tout matériau, le champ total $B$ est la somme du champ extérieur $H$ et du champ généré par l'aimantation $M$ :
+
 $$
 B = μ_0(H+M)
 $$
 
 Le moment magnétique $m$ d’un aimant est définit à partir de son aimantation $M$ (A/m) et de son volume $V$  (m³) : 
+
 $$
 m = M × V
 $$
+
 Le moment magnétique total de tout système est la somme vectorielle de toutes les contributions quel que soit leur type. 
 
 Un matériau diamagnétique ou paramagnétique sans champ extérieur a orientations aléatoires → $M=0$. Si un champs magnétique extérieur $H$ leur est appliqué, ils s’aimantent proportionnellement au champ. On a la relation linéaire : 
+
 $$
 M = χH
 $$
 
 On a donc :
+
 $$
 B = μ_0(H+M) = μ_0(1+χ)H = μH
 $$
@@ -360,6 +385,7 @@ $$
 avec : $μ = μ_0(1+χ)$. La susceptibilité magnétique $χ$ mesure donc à quel point le matériau modifie le champ magnétique.
 
 Cette formule n'est plus valable pour un matériau ferromagnétique, où il y a des non linéarités (hystérésis, saturation). Nous n'avons plus $M=M(H)$, mais plutôt $M=M(H, histoire)$, selon son cycle d'hystérésis. Quand le champ extérieur est très grand ($H \gg 0$), on a saturation de son aimantation : $M = M_s$. À l'inverse, quand le champ extérieur est nul ($H=0$), on a une aimantation rémanente : $M = M_r$. On a alors : 
+
 $$
 B = μ_0(H+M_{s/r})
 $$
