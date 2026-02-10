@@ -50,7 +50,7 @@ Installation :
 ## Bobine 
 
 On considère un solénoïde fini de rayon $a$, de longueur $L$, comportant $N$ spires et parcouru par un courant $I$. Sa densité linéique de spires est $
-n = \frac{N}{L}$. Le point d’observation est décrit en coordonnées cylindriques *$(r,z)$*.
+n = \frac{N}{L}$. Le point d’observation est décrit en coordonnées cylindriques $(r,z)$.
 
 On définit :
 
@@ -58,7 +58,7 @@ $$
 \xi = z - z_0
 $$
 
-où *$z_0$* désigne la position axiale d’une spire élémentaire.
+où $z_0$ désigne la position axiale d’une spire élémentaire.
 
 
 
@@ -70,7 +70,7 @@ $$
 \mathbf{B}(r,z) = B_r(r,z)\,\mathbf{e}_r + B_z(r,z)\,\mathbf{e}_z
 $$
 
-En posant $r = |x-x_0|$ et $z = y-y_0$, les composantes cartésiennes du champ sont :
+En posant $r = |x-x_0|$ et $z = y-y_0$ , les composantes cartésiennes du champ sont :
 
 $$
 B_x = -B_r \, \mathrm{sign}(x-x_0)
@@ -83,13 +83,13 @@ $$
 
 #### Champ magnétique radial $B_r$
 
-Par symétrie, sur l’axe du solénoïde (*$r = 0$*), on a :
+Par symétrie, sur l’axe du solénoïde ($r = 0$), on a :
 
 $$
 B_r = 0
 $$
 
-Pour *$r > 0$*, le champ radial est donné par la différence des contributions
+Pour $r > 0$ , le champ radial est donné par la différence des contributions
 évaluées aux bornes du solénoïde :
 
 $$
@@ -104,22 +104,21 @@ B_r^{(\xi)} =
 \sqrt{\frac{a}{r}}
 \left[
 \frac{2-k^2}{2k}\,K(k^2)
--
-\frac{1}{k}\,E(k^2)
+-\frac{1}{k}\,E(k^2)
 \right]
 $$
 
 où :
-- *$K(k^2)$* est l’intégrale elliptique complète du premier type,
-- *$E(k^2)$* est l’intégrale elliptique complète du second type,
-- *$k^2 = \frac{4ar}{\xi^2 + (a+r)^2}$* est le module elliptique avec la contrainte numérique : $ 0 \le k^2 < 1$.
+- $K(k^2)$ est l’intégrale elliptique complète du premier type,
+- $E(k^2)$ est l’intégrale elliptique complète du second type,
+- $k^2 = \frac{4ar}{\xi^2 + (a+r)^2}$ est le module elliptique avec la contrainte numérique : $ 0 \le k^2 < 1$.
 
 
 
 
 #### Champ magnétique axial $B_z$
 
-Pour *$r > 0$*, le champ axial s’écrit :
+Pour $r > 0$, le champ axial s’écrit :
 
 $$
 B_z(r) = B_z^{\text{high}} - B_z^{\text{low}}
@@ -139,8 +138,8 @@ B_z^{(\xi)} =
 $$
 
 où :
-- *$\Lambda(\phi,k)$* est la fonction lambda de Heuman,
-- *$\mathrm{sign}$* est la fonction signe,
+- $\Lambda(\phi,k)$ est la fonction lambda de Heuman,
+- $\mathrm{sign}$ est la fonction signe,
 - $\phi = \arctan\!\left(\left|\frac{\xi}{a-r}\right|\right)$ l’angle auxiliaire.
 
 
