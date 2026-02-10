@@ -49,8 +49,7 @@ Installation :
 
 ## Bobine 
 
-On considère un solénoïde fini de rayon $a$, de longueur $L$, comportant $N$ spires et parcouru par un courant $I$. Sa densité linéique de spires est $
-n = \frac{N}{L}$. Le point d’observation est décrit en coordonnées cylindriques $(r,z)$.
+On considère un solénoïde fini de rayon $a$, de longueur $L$, comportant $N$ spires et parcouru par un courant $I$. Sa densité linéique de spires est $n = \frac{N}{L}$ . Le point d’observation est décrit en coordonnées cylindriques $(r,z)$.
 
 On définit :
 
@@ -227,7 +226,6 @@ Le dipôle est modélisé par un moment magnétique ponctuel $\mathbf{m}$. Les o
 
 $$
 \mathbf{m} =
-
 \begin{pmatrix}
 m \cos\theta \\
 m \sin\theta \\
@@ -255,7 +253,7 @@ $$
 \mathbf{B}(\mathbf{r}) =
 \frac{\mu_0}{4\pi r^5}
 (3(\mathbf{m}\cdot\mathbf{r})\mathbf{r}
-- \mathbf{m} r^2)
+-\mathbf{m} r^2)
 $$
 
 
